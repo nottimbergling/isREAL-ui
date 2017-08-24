@@ -2,6 +2,7 @@ import datetime
 
 from bson import ObjectId
 
+from backend import dal
 from backend.dal.functions import tags
 from backend.dal.mongo_client.mongodb_client import mongo_connection, get_all_documents_from_collection
 
@@ -19,6 +20,10 @@ def add(tweetid, tags, author_display_name, author_user_name, author_id, likes, 
         "searchType": search_type,
         "votes": 0
     }
+
+    for tag in tags:
+        dal.functions.tags.change_rating(tag, 1)
+
     mongo_connection.posts.insert_one(insertion_data)
     return True
 
