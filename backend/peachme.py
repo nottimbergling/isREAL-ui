@@ -54,42 +54,40 @@ def send_static_file(path):
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
 def get_new_posts(request):
-    pass
+    return dal.functions.posts.get_new()
 
 
 @app.route('/posts/get_hot', methods=['POST'])
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
 def get_hot_posts(request):
-    pass
+    return dal.functions.posts.get_hot()
 
 
 @app.route('/posts/vote', methods=['POST'])
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
 def vote(request):
-    pass
+    vote_value = request.body["value"]
+    post_id = request.body["postId"]
+    return dal.functions.posts.vote(post_id, vote_value)
 
 
-@app.route('/posts/assign', methods=['POST'])
-@response_adapter_wrapper("application/json")
-@request_adapter_wrapper(BaseRequest)
-def assign(request):
-    pass
-
-
-@app.route('/posts/un_assign', methods=['POST'])
-@response_adapter_wrapper("application/json")
-@request_adapter_wrapper(BaseRequest)
-def un_assign(request):
-    pass
-
-
-@app.route('/posts/create', methods=['PUT'])
+@app.route('/posts/add', methods=['POST'])
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
 def create_post(request):
-    pass
+    url = request.body["url"]
+    tags = request.body["tags"]
+    author_user_name = request.body["authorUserName"]
+    author_display_name = request.body["authorDisplayName"]
+    author_id = request.body["authorId"]
+    likes = request.body["likes"]
+    retweets = request.body["retweets"]
+    posting_time = request.body["tweetPostingTime"]
+
+    return dal.functions.posts.add(url, tags, author_display_name, author_user_name, author_id, likes, retweets,
+                                   posting_time)
 
 
 @app.route('/posts/delete', methods=['PUT'])
