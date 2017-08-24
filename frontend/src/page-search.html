@@ -3,6 +3,7 @@
 
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="search/result-card.html">
+<link rel="import" href="../src/tweet-box.html">
 
 <link rel="import" href="search/search-field.html">
 <link rel="import" href="search/home_page/page-home.html">
@@ -14,12 +15,28 @@
 
             }
 
+
+            .flex-container {
+              display: flex;
+              flex-wrap: wrap;
+            max-width: 100%;
+
+            }
+            .flex-container::after {
+              content: '';
+              width: 100%;
+            }
+            .flex-item:last-child { /* or `:nth-child(n + 4)` */
+              order: 1;
+            }
+
         </style>
 
         <iron-ajax id="searchRequest"
             handle-as="json"
             content-type='application/json'
-            url="/search"
+            auto
+            url="/posts/get/new"
             body="[[requestParams]]"
             method="POST"
             handle-as="jsonResponse"
@@ -29,22 +46,24 @@
 
 
         <search-field></search-field>
-        <page-home id="home"></page-home>
 
-        <page-loading id="loading" style="display: {{display_state}};"></page-loading>
-        <template hidden="[[!isInHomePage]]" is="dom-repeat" items="{{lectures}}">
-            <result-card
-                    lecture_subject="[[item.title]]"
-                    lecture_description="[[item.description]]"
-                    user_display_name="[[item.user.display_name]]"
-                    user_name="[[item.username]]"
-                    user_rating="5"
-                    user_phone="[[item.user.contact_details.mobile]]"
-                    user_mail="[[item.user.contact_details.mail]]"
-                    user_voip="[[item.user.contact_details.voip]]"
-                    lecture_tags='[[[{name: "karate", is_expert: false }, { name: "hotel", is_expert: false}]]]'>
-                        </result-card>
-        </template>
+        <page-loading id="loading" style="display:{{display_state}};"></page-loading>
+
+        <div class="flex-container2" >
+            <template is="dom-repeat" items="{{posts}}">
+
+                <tweet-box class="flex-item2"
+
+                        tweetid="[[item._id]]"
+                        votecount="[[item.votes]]"
+                        >
+                </tweet-box>
+
+
+
+            </template>
+
+        </div>
 
 
     </template>
@@ -63,16 +82,12 @@
                         notify: true,
                         reflectToAttribute: true
                     },
-                    lectures: {
+                    posts: {
                         type: Array,
                         notify: true,
                         reflectToAttribute: true
                     },
-                    isInHomePage: {
-                        type: Boolean,
-                        value: true,
-                        observer: "removeHomePage"
-                    },
+
                     display_state: {
                         type: String,
                         value: "none"
@@ -80,17 +95,12 @@
                 }
             }
 
-            removeHomePage(isInHomePage){
-                if (!isInHomePage){
-                    this.$.home.remove();
-                }
-            }
+
 
             ready(){
                 super.ready();
                 var that = this;
                 Events.subscribe(this, Events.search, (query) => {
-                    that.isInHomePage = false;
                     that.display_state = "block";
                     console.log("Searchint with:", query);
                     that.requestParams = JSON.stringify(query);
@@ -107,11 +117,11 @@
                 let response = data.detail.response;
                 if (response.data != null){
                     console.log("Response: ", response.data);
-                    for (var i=0; i<response.data.lectures.length; i++){
-                        // response.data.lectures[i].tags = [];
-                    }
-                    this.lectures = response.data.lectures;
-                    if (this.lectures != null && this.lectures.length > 0){
+
+                    this.posts = response.data;
+                    console.log("posts: ", this.posts);
+
+                    if (this.posts != null && this.posts.length > 0){
 
                     }
                 }

@@ -81,7 +81,7 @@ def vote(request):
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
 def create_post(request):
-    url = request.body["url"]
+    tweetid = request.body["tweetId"]
     tags = request.body["tags"]
     author_user_name = request.body["authorUserName"]
     author_display_name = request.body["authorDisplayName"]
@@ -90,7 +90,7 @@ def create_post(request):
     retweets = request.body["retweets"]
     posting_time = request.body["tweetPostingTime"]
 
-    return dal.functions.posts.add(url, tags, author_display_name, author_user_name, author_id, likes, retweets,
+    return dal.functions.posts.add(tweetid, tags, author_display_name, author_user_name, author_id, likes, retweets,
                                    posting_time)
 
 

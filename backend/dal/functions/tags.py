@@ -9,15 +9,18 @@ def add(name):
     insertion_data = {
         "_id": name,
         "rating": 1,
-        "CreationDate": datetime.datetime.now()
     }
     mongo_connection.tags.insert_one(insertion_data)
     return insertion_data
 
 
 def change_rating(name, amount):
-    tag = mongo_connection.tags.find_one({"_id": ObjectId(name)})
-    return mongo_connection.tags.update_one({"_id": ObjectId(name)}, {"rating": tag["rating"] + amount})
+    tag = mongo_connection.tags.find_one({"_id": name})
+    new_rating = 1
+    if tag is not None:
+        new_rating = tag["rating"] + amount
+
+    mongo_connection.tags.update_one({"_id": name}, {"$set":{"rating": new_rating}},upsert=True)
 
 
 def delete(name):
