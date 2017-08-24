@@ -33,8 +33,7 @@
     <template>
         <style include="shared-styles">
             :host {
-                --app-primary-color: #11a3ff;
-                --app-secondary-color: white;
+
             }
 
             iron-pages {
@@ -42,8 +41,8 @@
             }
 
             app-header {
-                color: var(--app-secondary-color);
-                background-color: var(--app-primary-color);
+                color: var(--app-panel-text-color);
+                background-color: var(--app-panel-color);
             }
 
             paper-icon-button + [main-title] {
@@ -83,6 +82,10 @@
                 width: 150px;
                 height: 150px;
             }
+            iron-pages{
+                    background-color: black;
+
+            }
         </style>
 
         <app-location route="{{route}}"></app-location>
@@ -109,6 +112,7 @@
                 fallback-selection="404"
                 role="main">
             <page-profile name="profile"></page-profile>
+            <page-login name="login"></page-login>
             <page-search name="search"></page-search>
             <page-spaces name="spaces"></page-spaces>
             <page-createlecture name="createlecture"></page-createlecture>
@@ -256,8 +260,8 @@
                 }
 
                 // If no page was found in the route data, page will be an empty string.
-                // Default to 'search' in that case.
-                this.page = page || 'search';
+                // Default to 'login' in that case.
+                this.page = page || 'login';
 
                 // Close a non-persistent drawer when the page & route are changed.
                 if (!this.$.drawer.persistent) {

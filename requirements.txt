@@ -1,0 +1,7 @@
+pymongo >= 3.5.1
+schema >= 0.6.6
+flask
+tweepy
+httplib2
+oauth2
+profanity

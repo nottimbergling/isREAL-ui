@@ -21,8 +21,14 @@ def add(name):
 
 
 def change_rating(name, amount):
-    author = mongo_connection.authors.find_one({"_id": ObjectId(name)})
-    return mongo_connection.authors.update_one({"_id": ObjectId(name)}, {"rating": author["rating"] + amount})
+    author = mongo_connection.tags.find_one({"_id": name})
+    new_rating = 1
+    if author is not None:
+        new_rating = author["rating"] + amount
+
+    mongo_connection.authors.update_one({"_id": name}, {"$set": {"rating": new_rating}}, upsert=True)
+
+
 
 
 def delete(name):

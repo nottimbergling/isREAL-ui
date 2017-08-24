@@ -24,6 +24,8 @@ def add(tweetid, tags, author_display_name, author_user_name, author_id, likes, 
     for tag in tags:
         dal.functions.tags.change_rating(tag, 1)
 
+    dal.functions.authors.change_rating(author_display_name, 1)
+
     mongo_connection.posts.insert_one(insertion_data)
     return True
 
@@ -36,7 +38,9 @@ def vote(post_id, value):
     post = mongo_connection.posts.find_one({"_id": post_id})
     mongo_connection.posts.update_one({"_id": post_id}, {"$set": {"votes": post["votes"] + value}})
     for tag in post["tags"]:
-        tags.change_rating(tag,value)
+        tags.change_rating(tag, value)
+
+    dal.functions.authors.change_rating(post["author"], 1)
     return True
 
 

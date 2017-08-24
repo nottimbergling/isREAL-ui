@@ -2,14 +2,108 @@ import inspect
 import os
 import sys
 
-from flask import Flask, send_file, redirect
+import tweepy
+from flask import Flask, request, redirect, url_for, session, flash
+from flask import send_file
 
-from backend import config, dal
+from backend import config, dal, consts
 from backend.adapters.request_adapter import request_adapter_wrapper
 from backend.adapters.response_adapter import response_adapter_wrapper
 from backend.config import frontend_path
 from backend.entities.base_request import BaseRequest
 from backend.logs.logger import logger
+from .flask_oauth import OAuth
+
+sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
+
+# initialize Flask
+app = Flask(__name__, static_folder="../", template_folder="../")
+logger.info(" ################## SEARCH STARTING ##################" +
+            "\n - Configuration name: " + config.name)
+SECRET_KEY = "development key"
+app.secret_key = SECRET_KEY
+
+oauth = OAuth()
+
+api = None
+
+# Use Twitter as example remote application
+twitter = oauth.remote_app('twitter',
+                           # unless absolute urls are used to make requests, this will be added
+                           # before all URLs.  This is also true for request_token_url and others.
+                           base_url='https://api.twitter.com/1.1/',
+                           # where flask should look for new request tokens
+                           request_token_url='https://api.twitter.com/oauth/request_token',
+                           # where flask should exchange the token with the remote application
+                           access_token_url='https://api.twitter.com/oauth/access_token',
+                           # twitter knows two authorizatiom URLs.  /authorize and /authenticate.
+                           # they mostly work the same, but for sign on /authenticate is
+                           # expected because this will give the user a slightly different
+                           # user interface on the twitter side.
+                           authorize_url='https://api.twitter.com/oauth/authorize',
+                           # the consumer keys from the twitter application registry.
+                           consumer_key=consts.consumer_key,
+                           consumer_secret=consts.consumer_secret
+                           )
+
+
+@twitter.tokengetter
+def get_twitter_token(token=None):
+    return session.get('twitter_token')
+
+
+@app.route('/perform_login')
+def perform_login():
+    return twitter.authorize(callback=url_for('oauth_authorized',
+                                              next=request.args.get('next') or request.referrer or None))
+
+
+@app.route('/logout')
+def logout():
+    session.pop('screen_name', None)
+    flash('You were signed out')
+    return redirect(request.referrer or url_for('/'))
+
+
+@app.route('/authorized')
+@twitter.authorized_handler
+def oauth_authorized(resp):
+    next_url = request.args.get('next') or url_for('/')
+    if resp is None:
+        flash(u'You denied the request to sign in.')
+        return redirect(next_url)
+
+    session['access_key'] = resp['oauth_token']
+    session['access_secret'] = resp['oauth_token_secret']
+    session['screen_name'] = resp['screen_name']
+
+    session['twitter_token'] = (
+        resp['oauth_token'],
+        resp['oauth_token_secret']
+    )
+
+    auth = tweepy.OAuthHandler(consts.consumer_key, consts.consumer_secret)
+    auth.set_access_token(session['access_key'], session['access_secret'])
+
+    global api
+    api = tweepy.API(auth)
+
+    return redirect("/search")
+
+
+@app.route("/retweet/<tweet_id>/<content>")
+def retweet(content, tweet_id):
+    # tweetId = 900804629885222913
+    screen_name = api.statuses_lookup(id_=[tweet_id, ])[0].user.screen_name
+    res = api.update_status('@{username} {content}'.format(username=screen_name, content=content), tweet_id)
+    return res
+
+
+@app.route("/filter/<content>")
+def validate_content(content):
+    from profanity import profanity
+    return len(content) < 100 and not profanity.contains_profanity(content)
+
 
 sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
 
@@ -91,10 +185,8 @@ def create_post(request):
     posting_time = request.body["tweetPostingTime"]
     search_type = request.body["searchType"]
 
-
     return dal.functions.posts.add(tweetid, tags, author_display_name, author_user_name, author_id, likes, retweets,
                                    posting_time, search_type)
-
 
 
 @app.route('/posts/delete', methods=['PUT'])
