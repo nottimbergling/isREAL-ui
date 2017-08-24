@@ -101,6 +101,7 @@
                          id="israel-circle" src="../frontend/images/israel-circle.png"></iron-image>
             <h3 class="welcome">The platform for Israeli advocacy</h3>
             <iron-image class="push_button"  style="width:420px;height: 80px;" sizing="contain"
+                        on-click="signIn"
                          id="signin" src="../frontend/images/twitter_login_button.png"></iron-image>
             <!--<button style="background: url(myimage.png)" ... />-->
             <!--&lt;!&ndash;<paper-button style="background: url(../frontend/images/twitter_login_button.png)"></paper-button>&ndash;&gt;-->
@@ -116,6 +117,10 @@
 
             static get properties() {
                 return {}
+            }
+
+            signIn() {
+                top.location = "/perform_login";
             }
         }
 

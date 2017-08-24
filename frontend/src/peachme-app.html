@@ -118,7 +118,6 @@
             <page-loading name="loading"></page-loading>
             <page-login name="login"></page-login>
         </iron-pages>
-
         <app-drawer id="drawer" swipe-open>
             <iron-image sizing="contain" class="drawer-image" alt="Peach Me" src="frontend/images/israel-world.jpg"></iron-image>
             <app-menu selected="[[page]]" attr-for-selected="name" role="navigation">
@@ -263,8 +262,8 @@
                 }
 
                 // If no page was found in the route data, page will be an empty string.
-                // Default to 'search' in that case.
-                this.page = page || 'search';
+                // Default to 'login' in that case.
+                this.page = page || 'login';
 
                 // Close a non-persistent drawer when the page & route are changed.
                 if (!this.$.drawer.persistent) {
