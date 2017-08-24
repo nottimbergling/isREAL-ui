@@ -28,9 +28,8 @@
         <iron-ajax id="requestData"
             handle-as="json"
             url="/tags/get"
-            body=''
+            json={}
             method="POST"
-            handle-as="json"
             on-response="getAllTags"
             debounce-duration="3000">
         </iron-ajax>
@@ -138,12 +137,12 @@
 
             getAllTags(data) {
                 if (!data.detail.succeeded) {
-                    console.log("NON SUCCESS");
+                    console.log("NON SUCCESS"); 
                     console.log(data);
                     return undefined;
                 }
                 console.log(data);
-                var all_tags = data.detail.xhr.response;
+                var all_tags = data.detail.xhr.response.data;
                 this.items = [];
                 for (var i = 0; i < all_tags.length; i++) {
                     this.items.push({
