@@ -1,4 +1,4 @@
-class PeachResponse(object):
+class IsrealResponse(object):
     def __init__(self, data, status="success", http_status_code=200, http_extra_headers=None):
         self.data = data
         self.status = status
