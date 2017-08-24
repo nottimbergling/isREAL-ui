@@ -112,7 +112,6 @@
                 fallback-selection="404"
                 role="main">
             <page-profile name="profile"></page-profile>
-            <page-login name="login"></page-login>
             <page-search name="search"></page-search>
             <page-spaces name="spaces"></page-spaces>
             <page-createlecture name="createlecture"></page-createlecture>
@@ -120,26 +119,28 @@
             <page-lecture name="lecture"></page-lecture>
             <page-404 name="404"></page-404>
             <page-loading name="loading"></page-loading>
+            <page-login name="login"></page-login>
         </iron-pages>
 
         <app-drawer id="drawer" swipe-open>
             <iron-image sizing="contain" class="drawer-image" alt="Peach Me" src="frontend/images/israel-world.jpg"></iron-image>
             <app-menu selected="[[page]]" attr-for-selected="name" role="navigation">
-                <a name="hot" href="/?filter=hot" class="app-menu-item">
+                <a name="login" href="/logout" class="app-menu-item">
                     <span>
-                        <iron-icon icon="social:whatshot"></iron-icon>
-                        <span class="drawer-menu-text">Hot</span>
+                        <iron-icon icon="social:person-add"></iron-icon>
+                        <span class="drawer-menu-text">Logout</span>
                     </span>
                 </a>
-                <a name="new" href="/?filter=new" class="app-menu-item">
-                    <span>
-                        <iron-icon icon="icons:date-range"></iron-icon>
-                        <span class="drawer-menu-text">New</span>
-                    </span>
-                </a>
-                <a name="myactivity" href="/?filter=myactivity" class="app-menu-item">
+                <a name="hot" href="/posts/get/hot" class="app-menu-item">
                     <span>
                         <iron-icon icon="icons:home"></iron-icon>
+                        <span class="drawer-menu-text">Home</span>
+                    </span>
+                </a>
+
+                <a name="myactivity" href="/" class="app-menu-item">
+                    <span>
+                        <iron-icon icon="social:whatshot"></iron-icon>
                         <span class="drawer-menu-text">My Activity</span>
                     </span>
                 </a>

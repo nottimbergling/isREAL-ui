@@ -5,6 +5,13 @@ import sys
 import tweepy
 from flask import Flask, request, redirect, url_for, session, flash
 from flask import send_file
+import tweepy
+from flask import Flask, request, redirect, url_for, session, flash
+from flask import send_file
+from flask.templating import render_template
+
+from backend import config, dal, consts
+from . flask_oauth import OAuth
 
 from backend import config, dal, consts
 from backend.adapters.request_adapter import request_adapter_wrapper
@@ -12,16 +19,16 @@ from backend.adapters.response_adapter import response_adapter_wrapper
 from backend.config import frontend_path
 from backend.entities.base_request import BaseRequest
 from backend.logs.logger import logger
-from .flask_oauth import OAuth
 
 sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
 
 # initialize Flask
-app = Flask(__name__, static_folder="../", template_folder="../")
+app = Flask(__name__, static_folder="../")
 logger.info(" ################## SEARCH STARTING ##################" +
             "\n - Configuration name: " + config.name)
 SECRET_KEY = "development key"
 app.secret_key = SECRET_KEY
+
 
 oauth = OAuth()
 
@@ -95,7 +102,7 @@ def oauth_authorized(resp):
 def retweet(content, tweet_id):
     # tweetId = 900804629885222913
     screen_name = api.statuses_lookup(id_=[tweet_id, ])[0].user.screen_name
-    res = api.update_status('@{username} {content}'.format(username=screen_name, content=content), tweet_id)
+    res = api.update_status('@{username} {content}'.format(username=screen_name, content=content), tweetId)
     return res
 
 
@@ -104,13 +111,6 @@ def validate_content(content):
     from profanity import profanity
     return len(content) < 100 and not profanity.contains_profanity(content)
 
-
-sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
-
-# initialize Flask
-app = Flask(__name__, static_folder="../")
-logger.info(" ################## SEARCH STARTING ##################" +
-            "\n - Configuration name: " + config.name)
 
 
 @app.route("/")
@@ -123,6 +123,9 @@ logger.info(" ################## SEARCH STARTING ##################" +
 @app.route("/loading")
 @app.route("/404")
 def index():
+    access_token = session.get('access_token')
+    # if not access_token:
+    #     return redirect("/login")
     return send_file(os.path.join(frontend_path, "index.html"))
 
 
