@@ -54,8 +54,11 @@
 
         <paper-card class="rate">
             <div class="card-content">
-                <x-tweet tweetid="{{tweetid}}"></x-tweet>
+                <div>
+                    <x-tweet tweetid="{{tweetid}}"></x-tweet>
+                    <paper-button id="commentbutton" raised class="primary-color" on-click="opencomment">Comment</paper-button>
 
+                </div>
                 <div class="rating">
                     <paper-icon-button id="upicon" on-click="_upVote" icon="icons:arrow-upward"
                                        class="up"></paper-icon-button>

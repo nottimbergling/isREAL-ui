@@ -123,9 +123,6 @@ def validate_content(content):
 @app.route("/loading")
 @app.route("/404")
 def index():
-    access_token = session.get('access_token')
-    # if not access_token:
-    #     return redirect("/login")
     return send_file(os.path.join(frontend_path, "index.html"))
 
 
