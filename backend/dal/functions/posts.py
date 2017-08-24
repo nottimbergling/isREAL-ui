@@ -6,7 +6,7 @@ from backend.dal.functions import tags
 from backend.dal.mongo_client.mongodb_client import mongo_connection, get_all_documents_from_collection
 
 
-def add(tweetid, tags, author_display_name, author_user_name, author_id, likes, retweets, posting_time):
+def add(tweetid, tags, author_display_name, author_user_name, author_id, likes, retweets, posting_time, search_type):
     insertion_data = {
         "_id": tweetid,
         "tags": tags,
@@ -16,6 +16,7 @@ def add(tweetid, tags, author_display_name, author_user_name, author_id, likes, 
         "exposure": [{datetime.datetime.now().strftime("%Y:%m:%d %h:%M:%S"): {"likes": likes, "retweets": retweets}}],
         "postingTime": posting_time,
         "creationDate": datetime.datetime.now().strftime("%Y:%m:%d %h:%M:%S"),
+        "searchType": search_type,
         "votes": 0
     }
     mongo_connection.posts.insert_one(insertion_data)

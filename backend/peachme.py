@@ -89,9 +89,14 @@ def create_post(request):
     likes = request.body["likes"]
     retweets = request.body["retweets"]
     posting_time = request.body["tweetPostingTime"]
+    search_type = request.body["searchType"]
+
+    for tag in tags:
+        dal.functions.tags.add(tag)
 
     return dal.functions.posts.add(tweetid, tags, author_display_name, author_user_name, author_id, likes, retweets,
-                                   posting_time)
+                                   posting_time, search_type)
+
 
 
 @app.route('/posts/delete', methods=['PUT'])
