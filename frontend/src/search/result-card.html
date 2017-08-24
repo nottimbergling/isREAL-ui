@@ -1,0 +1,420 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="result-card">
+    <template>
+        <style include="shared-styles">
+            /*:host {*/
+                /*direction: rtl;*/
+                /*display: flex;*/
+                /*align-items: center;*/
+                /*justify-content: center;*/
+                /*padding-bottom: 10px;*/
+                /*font-size: 14px;*/
+            /*}*/
+
+            /*paper-card {*/
+                /*width: 100%;*/
+            /*}*/
+
+            /*.card-subject {*/
+                /*@apply(--paper-font-headline);*/
+                /*font-size: 24px;*/
+                /*display: inline-block;*/
+                /*margin-bottom: 5px;*/
+                /*padding: 10px;*/
+            /*}*/
+
+            /*.card-rating{*/
+                /*display: inline-block;*/
+                /*margin-right: 10px;*/
+                /*cursor: default;*/
+            /*}*/
+
+            /*.card-description {*/
+                /*color: var(--paper-grey-600);*/
+                /*padding-right: 10px;*/
+            /*}*/
+
+            /*.card-tags ul{*/
+                /*padding-right: 0px;*/
+            /*}*/
+
+            /*.card-tags li{*/
+                /*display: inline-block;*/
+                /*color: white;*/
+                /*border-radius: 0.4em;*/
+                /*margin-left: 3px;*/
+                /*padding: 2px;*/
+            /*}*/
+
+            /*.card-buttons {*/
+                /*color: var(--google-blue-500);*/
+            /*}*/
+
+            /*iron-icon.star {*/
+                /*--iron-icon-width: 22px;*/
+                /*--iron-icon-height: 22px;*/
+                /*color: var(--paper-grey-500);*/
+                /*padding-bottom: 7px;*/
+            /*}*/
+
+            /*iron-icon.stargold {*/
+                /*--iron-icon-width: 22px;*/
+                /*--iron-icon-height: 22px;*/
+                /*color: var(--paper-amber-500);*/
+                /*padding-bottom: 7px;*/
+            /*}*/
+
+            /*.card-actions {*/
+                /*display: inline-flex;*/
+            /*}*/
+
+            /*iron-icon.event{*/
+                /*margin: 3px;*/
+            /*}*/
+
+            /*.card-user{*/
+                /*display: inline-block;*/
+                /*float: left;*/
+                /*margin-left: 10%;*/
+                /*color: var(--paper-grey-600);*/
+            /*}*/
+
+            /*.card-user-picture{*/
+                /*height: 50px;*/
+                /*width: 50px;*/
+            /*}*/
+
+            /*.card-user-rating{*/
+                /*display: inline-flex;*/
+                /*margin-right: 15px;*/
+            /*}*/
+
+            /*.card-tags{*/
+                /*display: inline-flex;*/
+            /*}*/
+
+            /*.action-button-text {*/
+                /*padding-left: 5px;*/
+                /*padding-top: 5px;*/
+            /*}*/
+            :host {
+
+            }
+
+            paper-card {
+                width: 100%
+            }
+
+            .card-content,.card-actions {
+                direction: rtl
+            }
+
+            .description {
+                width: 85%;
+            }
+
+            .rate-image {
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 200px;
+                background: url('../../../frontend/images/default_avatar.jpg');
+                background-size: cover;
+            }
+
+            .rate-header {
+                @apply(--paper-font-headline);
+            }
+
+            .rate-name {
+                color: var(--paper-grey-600);
+                margin: 10px 0;
+            }
+
+            .signup-button,.user-button {
+                padding-top: 0;
+                padding-bottom: 0;
+                display: inline-block;
+            }
+
+            paper-icon-button.rate-icon {
+                --iron-icon-fill-color: white;
+                --iron-icon-stroke-color: var(--paper-grey-600);
+            }
+
+            #userDialog {
+                padding: 10px;
+                margin: 0;
+                direction: rtl;
+            }
+
+            #userbutton {
+                padding-right: 0;
+                color: var(--paper-grey-600);
+            }
+
+            .user-detail {
+                display: inline-flex;
+            }
+
+            .user-detail-icon {
+                margin-left: 5px;
+            }
+        </style>
+
+        <paper-card class="rate">
+            <div class="card-content">
+                <div class="rate-header">[[lecture_subject]]</div>
+                <div class="rate-name">
+                    <paper-button id="userbutton" class="user-button" on-click="openUserDialog">
+                        <iron-icon icon="icons:arrow-drop-down"></iron-icon>
+                        <iron-icon icon="social:person"></iron-icon>
+                        [[user_display_name]]
+                    </paper-button>
+                </div>
+                <div class="description">
+                    [[lecture_description]]
+                </div>
+            </div>
+            <div class="card-actions">
+                <paper-icon-button class="rate-icon" icon="star"></paper-icon-button>
+                <paper-icon-button class="rate-icon" icon="star"></paper-icon-button>
+                <paper-icon-button class="rate-icon" icon="star"></paper-icon-button>
+                <paper-icon-button class="rate-icon" icon="star"></paper-icon-button>
+                <paper-icon-button class="rate-icon" icon="star"></paper-icon-button>
+
+                <paper-button id="signupbutton" raised class="primary-color signup-button">
+                    <iron-icon icon="icons:bookmark-border"></iron-icon>
+                    Sign Up
+                </paper-button>
+            </div>
+            <div class="rate-image"></div>
+        </paper-card>
+
+
+        <paper-dialog id="userDialog" no-overlap horizontal-align="left" vertical-align="top">
+            <paper-dialog-scrollable>
+                <a href="profile/[[user_name]]" style="text-decoration:none">
+                    <paper-button class="primary-color">[[user_display_name]]</paper-button>
+                </a>
+                <br>
+                <br>
+                <div class="user-detail">
+                    <iron-icon class="user-detail-icon" icon="communication:phone"></iron-icon>
+                    <b class="user-detail-icon">VOIP: </b>
+                    <span style="margin-right: 24px">[[user_voip]]</span>
+                </div>
+                <br>
+                <div class="user-detail">
+
+                    <iron-icon class="user-detail-icon" icon="communication:phonelink-ring"></iron-icon>
+                    <b class="user-detail-icon">PHONE: </b>
+                    <span style="margin-right: 9px">[[user_phone]]</span>
+                </div>
+                <br>
+                <div class="user-detail">
+                    <iron-icon class="user-detail-icon" icon="communication:email"></iron-icon>
+                    <b class="user-detail-icon">EMAIL: </b>
+                    <span style="margin-right: 14px"><a href="#">[[user_mail]]</a></span>
+                </div>
+            </paper-dialog-scrollable>
+        </paper-dialog>
+
+
+        <!--<paper-card>-->
+            <!--<div class="card-content">-->
+                <!--<div class="card-subject">{{lecture_subject}}</div>-->
+                <!--<div class="card-rating" on-mouseout="_mouseOutStar">-->
+                    <!--<iron-icon class$="[[star0]]" icon="star" on-mouseover="_mouseOverStar1"></iron-icon>-->
+                    <!--<iron-icon class$="[[star1]]" icon="star" on-mouseover="_mouseOverStar2"></iron-icon>-->
+                    <!--<iron-icon class$="[[star2]]" icon="star" on-mouseover="_mouseOverStar3"></iron-icon>-->
+                    <!--<iron-icon class$="[[star3]]" icon="star" on-mouseover="_mouseOverStar4"></iron-icon>-->
+                    <!--<iron-icon class$="[[star4]]" icon="star" on-mouseover="_mouseOverStar5"></iron-icon>-->
+                <!--</div>-->
+                <!--<div class="card-actions">-->
+                    <!--<paper-button class="card-buttons">-->
+                        <!--<iron-icon class="event" icon="icons:event"></iron-icon>-->
+                        <!--<span class="action-button-text">הרשם להרצאה</span>-->
+                    <!--</paper-button>-->
+                <!--</div>-->
+                <!--<div id="tags_element" class="card-tags"></div>-->
+                <!--<div class="card-user">-->
+                    <!--<img class="card-user-picture" src="..\frontend\images\default_avatar.jpg" />-->
+                    <!--<div class="card-user-rating">{{user_rating}} <iron-icon icon="star"></iron-icon></div>-->
+                    <!--<div class="card-user-name">{{user_name}}</div>-->
+                    <!--<div class="card-user-phone">{{user_phone}}</div>-->
+                    <!--<div class="card-user-mail">{{user_mail}}</div>-->
+                <!--</div>-->
+                <!--<div class="card-description">{{lecture_description}}</div>-->
+            <!--</div>-->
+        <!--</paper-card>-->
+
+
+
+    </template>
+
+    <script>
+        class ResultCard extends Polymer.Element {
+            static get is() {
+                return 'result-card';
+            }
+
+            openUserDialog() {
+                this.$.userDialog.positionTarget = this.$.userbutton;
+                this.$.userDialog.open();
+            }
+
+            static get properties() {
+                return {
+                    lecture_subject:{
+                        type: String,
+                        value: "Potatoes"
+                    },
+                    lecture_description:{
+                        type: String,
+                        value: " בואו ושמעו על הרצאה בואו ושמעו על הרצאה בואו ושמעו על הרצאה בואו ושמעו על הרצאה בואו ושמעו על הרצאה."
+                    },
+                    lecture_tags:{
+                        type: Array,
+                        value: [
+                            {
+                                name: "karate",
+                                is_expert: false
+                            },
+                            {
+                                name: "hotel",
+                                is_expert: false
+                            },
+                            {
+                                name: "water",
+                                is_expert: true
+                            },
+                            {
+                                name: "באולינג",
+                                is_expert: false
+                            },
+                            {
+                                name: "כדורת",
+                                is_expert: true
+                            }
+                        ],
+                        observer: 'ChangeTags'
+                    },
+                    user_name:{
+                        type: String,
+                        value: "שלום אסייג"
+                    },
+                    user_rating:{
+                        type: Number,
+                        value: 3.5
+                    },
+                    user_phone:{
+                        type: String,
+                        value: "054-1231234"
+                    },
+                    user_mail:{
+                        type: String,
+                        value: "aaaaa@gmail.com"
+                    },
+                    star0: {
+                        type: String,
+                        value: "star"
+                    },
+                    star1: {
+                        type: String,
+                        value: "star"
+                    },
+                    star2: {
+                        type: String,
+                        value: "star"
+                    },
+                    star3: {
+                        type: String,
+                        value: "star"
+                    },
+                    star4: {
+                        type: String,
+                        value: "star"
+                    }
+                };
+            }
+
+            ready(){
+                super.ready();
+                this.ChangeTags(this.lecture_tags)
+            }
+
+            ChangeTags(tag_objects){
+                let tags_list_unordered_list = document.createElement("ul");
+                for(let index in tag_objects){
+                    let bullet = document.createElement("li");
+                    bullet.textContent = tag_objects[index].name;
+                    let backgroundColor = tag_objects[index].is_expert ? "#ff5722" : "#a8a8a8";
+                    bullet.style="background-color: " + backgroundColor;
+                    tags_list_unordered_list.appendChild(bullet);
+                }
+//                this.$.tags_element.innerHTML = tags_list_unordered_list.outerHTML;
+            }
+
+            _mouseOutStar() {
+                this.star0 = "star";
+                this.star1 = "star";
+                this.star2 = "star";
+                this.star3 = "star";
+                this.star4 = "star";
+            }
+
+            _mouseOverStar1() {
+                this.star0 = "stargold";
+                this.star1 = "star";
+                this.star2 = "star";
+                this.star3 = "star";
+                this.star4 = "star";
+            }
+
+            _mouseOverStar2() {
+                this.star0 = "stargold";
+                this.star1 = "stargold";
+                this.star2 = "star";
+                this.star3 = "star";
+                this.star4 = "star";
+            }
+
+            _mouseOverStar3() {
+                this.star0 = "stargold";
+                this.star1 = "stargold";
+                this.star2 = "stargold";
+                this.star3 = "star";
+                this.star4 = "star";
+            }
+
+            _mouseOverStar4() {
+                this.star0 = "stargold";
+                this.star1 = "stargold";
+                this.star2 = "stargold";
+                this.star3 = "stargold";
+                this.star4 = "star";
+            }
+
+            _mouseOverStar5() {
+                this.star0 = "stargold";
+                this.star1 = "stargold";
+                this.star2 = "stargold";
+                this.star3 = "stargold";
+                this.star4 = "stargold";
+            }
+        }
+
+        window.customElements.define(ResultCard.is, ResultCard);
+    </script>
+</dom-module>

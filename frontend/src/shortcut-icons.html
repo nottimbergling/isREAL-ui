@@ -1,0 +1,43 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="shortcut-icons">
+    <template>
+        <style include="shared-styles">
+            :host {
+            }
+            #addNewUser, #addNeLecture {
+                height: auto;
+                width: 40% !important;
+                margin-right: 3.5%;
+            }
+        </style>
+    <div class="shortcut-menu">
+        <paper-icon-button title="Add User" icon="accessibility" on-click="addNewUser"></paper-icon-button>
+        <paper-icon-button title="Create Lecture" icon="add-circle" on-click="addNewLecture"></paper-icon-button>
+        <!--<iron-image src="../frontend/images/AddUserMale.png" alt="Add New User" title="Add New User" id="addNewUser" on-click="addNewUser"></iron-image>-->
+        <!--<iron-image src="../frontend/images/date.png" id="addNeLecture" alt="Add New Lecture" title="Add New Lecture" on-click="addNewLecture"></iron-image>-->
+    </div>
+    </template>
+    <script>
+        class ShortcutIconsPage extends Polymer.Element {
+            static get is() {
+                return 'shortcut-icons';
+            }
+
+            addNewUser() {
+                top.location = "/createuser";
+            }
+
+            addNewLecture() {
+                top.location = "/createlecture";
+            } 
+        }
+
+        customElements.define(ShortcutIconsPage.is, ShortcutIconsPage);
+    </script>
+</dom-module>

@@ -1,0 +1,21 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/peachme-app.html",
+  "fragments": [
+    "src/page-login.html",
+    "src/page-search.html",
+    "src/view-404.html"
+  ],
+  "sources": [
+    "src/**/*",
+    "images/**/*",
+    "bower.json"
+  ],
+  "extraDependencies": [
+    "manifest.json",
+    "bower_components/webcomponentsjs/*.js"
+  ],
+  "lint": {
+    "rules": ["polymer-2"]
+  }
+}

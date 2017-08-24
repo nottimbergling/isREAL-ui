@@ -1,0 +1,161 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="../shared-styles.html">
+<link rel="import" href="../page-loading.html">
+
+<dom-module id="input-form">
+    <template>
+        <style include="shared-styles">
+            :host {
+
+            }
+
+            .disabled {
+
+            }
+
+            paper-card {
+                width: 100%;
+            }
+
+            .card-subject {
+                @apply(--paper-font-headline);
+                font-size: 20px;
+                display: inline-block;
+                margin-bottom: 5px;
+            }
+
+            #savebutton {
+                padding-top: 10px;
+            }
+        </style>
+
+        <iron-ajax id="requestData"
+            handle-as="json"
+            content-type="application/json"
+            url="get_user_data"
+            body='{"username" : "{{username}}"}'
+            method="POST"
+            handle-as="json"
+            on-response="handleResponse"
+            debounce-duration="3000">
+        </iron-ajax>
+
+
+        <iron-ajax id="updateUser"
+            handle-as="json"
+            content-type="application/json"
+            url="update_user_data"
+            body='{"username" : "{{username}}"}'
+            method="POST"
+            handle-as="json"
+            debounce-duration="3000">
+        </iron-ajax>
+
+        <page-loading id="loading" style="display: {{display_state}};"></page-loading>
+        <paper-card>
+            <div class="card-content">
+                <div class="card-subject">Edit Profile: {{username}}</div>
+
+                <paper-input disabled="[[!isEditMode]]" id="username" label="מזהה משתמש" value="{{username}}"></paper-input>
+                <paper-input disabled="[[!isEditMode]]" id="displayName" label="שם משתמש" value="{{displayName}}"></paper-input>
+                <paper-input disabled="[[!isEditMode]]" id="tags" label="תגיות" value="{{tags}}"></paper-input>
+                <paper-input disabled="[[!isEditMode]]" id="mobile" label="טלפון" value="{{mobile}}"></paper-input>
+                <paper-input disabled="[[!isEditMode]]" id="voip" label="voip" value="{{voip}}"></paper-input>
+
+                <paper-input disabled="[[!isEditMode]]" id="mail" label="מייל" value={{mail}}>
+                    <iron-icon icon="mail" slot="prefix"></iron-icon>
+                </paper-input>
+
+                <paper-button id="savebutton" raised class="primary-color" on-click="ChangeMode">Edit</paper-button>
+            </div>
+        </paper-card>
+
+    </template>
+
+    <script>
+        class InputForm extends Polymer.Element {
+            static get is() {
+                return 'input-form';
+            }
+
+            static get properties() {
+                return {
+                    display_state: {
+                        type: String,
+                        value: "block"
+                    },
+                    isEditMode: {
+                        type: Boolean,
+                        value: false
+                    },
+                    username: {
+                        type: String,
+                        value: ""
+                    },
+                    displayName: {
+                        type: String,
+                        value: ""
+                    },
+                    tags: {
+                        type: String,
+                        value: ""
+                    },
+                    mobile: {
+                        type: String,
+                        value: ""
+                    },
+                    voip: {
+                        type: String,
+                        value: ""
+                    },
+                    mail: {
+                        type: String,
+                        value: ""
+                    },
+                    user: {
+                        type: String
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+                this.display_state = "block";
+                this.$.requestData.generateRequest();
+            }
+
+            handleResponse(data) {
+                this.response = data.detail.response;
+                if (this.response.data != null){
+                    console.log("Response: ", this.response.data);
+                    this.mail = this.response.data.contact_details.mail;
+                    this.displayName = this.response.data.display_name;
+                    this.username = this.response.data.username;
+                    this.voip = this.response.data.contact_details.voip;
+                    this.mobile = this.response.data.contact_details.mobile;
+
+                    this.tags = this.response.data.tags.map((tag) => {return tag.name}).join(", ");
+                }
+                this.display_state = "none";
+            }
+
+            ChangeMode() {
+                this.isEditMode = !this.isEditMode;
+
+                if (this.isEditMode){
+                    this.$.savebutton.textContent = "Save"
+                }
+                else{
+                    this.$.savebutton.textContent = "Edit"
+                }
+            }
+        }
+
+        customElements.define(InputForm.is, InputForm);
+
+
+    </script>
+</dom-module>

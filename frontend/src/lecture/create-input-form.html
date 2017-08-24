@@ -1,0 +1,105 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="create-input-form">
+    <template>
+        <style include="shared-styles">
+            :host {
+
+            }
+
+            .card-subject {
+                @apply(--paper-font-headline);
+                font-size: 20px;
+                display: inline-block;
+                margin-bottom: 5px;
+            }
+
+            paper-card {
+                width: 100%;
+            }
+        </style>
+
+        <iron-ajax id="createLecture"
+            auto=false
+            handle-as="json"
+            content-type="application/json"
+            url="update_or_create_lecture"
+            body='{"username" : "{{username}}","title" : "{{title}}","description" : "{{description}}","tags" : "{{tags}}","category" : "{{category}}", "rating": "{{rating}}", "comments": "{{comments}}" }'
+            method="POST"
+            handle-as="json"
+            debounce-duration="3000">
+        </iron-ajax>
+
+        <paper-card>
+            <div class="card-content">
+            <h1 class="card-subject">Create Lecture: {{title}}</h1>
+
+            <paper-input id="username" label="שם מרצה" value="{{username}}"></paper-input>
+            <paper-input id="title" label="שם ההרצאה" value="{{title}}"></paper-input>
+            <paper-input id="description" label="תיאור" value="{{description}}"></paper-input>
+            <paper-input id="category" label="קטגוריה" value="{{category}}"></paper-input>
+            <paper-input id="tags" label="תגיות" value="{{tags}}"></paper-input>
+
+            <paper-button id="mybutton" raised class="primary-color" on-click="sendCreateLectureRequest">CREATE</paper-button>
+            </div>
+        </paper-card>
+
+    </template>
+
+    <script>
+        class CreateInputForm extends Polymer.Element {
+            static get is() {
+                return 'create-input-form';
+            }
+
+            static get properties() {
+                return {
+                    username: {
+                        type: String,
+                        value: ""
+                    },
+                    title: {
+                        type: String,
+                        value: ""
+                    },
+                    description: {
+                        type: String,
+                        value: ""
+                    },
+                    rating: {
+                        type: Array,
+                        value: []
+                    },
+                    comments: {
+                        type: Array,
+                        value: []
+                    },
+                    tags: {
+                        type: String,
+                        value: ""
+                    },
+                    category:{
+                        type: String,
+                        value: ""
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+            }
+
+            sendCreateLectureRequest() {
+                this.$.createLecture.generateRequest();
+            }
+
+        }
+
+        customElements.define(CreateInputForm.is, CreateInputForm);
+
+    </script>
+</dom-module>

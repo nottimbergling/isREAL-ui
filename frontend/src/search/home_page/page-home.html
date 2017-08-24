@@ -1,0 +1,67 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="../../shared-styles.html">
+<link rel="import" href="page-top-lectures.html">
+<link rel="import" href="page-trending-lectures.html">
+<link rel="import" href="page-top-users.html">
+
+
+<dom-module id="page-home">
+    <template>
+        <style include="shared-styles">
+            :host {
+            }
+            #home_page_warapper {
+                align-items: center;
+                align-content: center;
+                width: 86%;
+                height: 100%;
+                display: flex;
+                margin-left: 8%;
+            }
+
+            paper-card {
+                flex: 1;
+                margin: 5px;
+                width:30%;
+            }
+
+        </style>
+    <div id="home_page_warapper">
+        <div >
+            <center>
+            <paper-card>
+                <div class="card-content">
+                    <page-top-lectures class="quarter-screen-wrapper quarter-top"></page-top-lectures>
+                </div>
+            </paper-card>
+
+
+
+            <paper-card>
+                <div class="card-content">
+                    <page-top-users class="quarter-screen-wrapper quarter-top"></page-top-users>
+                    </div>
+            </paper-card>
+
+            <paper-card>
+                <div class="card-content">
+                    <page-trending-lectures class="quarter-screen-wrapper quarter-bottom"></page-trending-lectures>
+                </div>
+            </paper-card>
+
+        </center>
+        </div>
+    </div>
+    </template>
+
+    <script>
+        class HomePage extends Polymer.Element {
+            static get is() {
+                return 'page-home';
+            }
+        }
+        customElements.define(HomePage.is, HomePage);
+    </script>
+</dom-module>

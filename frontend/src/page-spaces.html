@@ -1,0 +1,25 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="page-spaces">
+    <template>
+        <style include="shared-styles">
+            :host {
+
+            }
+        </style>
+
+        spaces
+        hell yeah
+    </template>
+    <script>
+        class SpacesPage extends Polymer.Element {
+            static get is() {
+                return 'page-spaces';
+            }
+        }
+
+        customElements.define(SpacesPage.is, SpacesPage);
+    </script>
+</dom-module>

@@ -1,0 +1,108 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="create-input-form">
+    <template>
+        <style include="shared-styles">
+            :host {
+
+            }
+
+            paper-card {
+                width: 100%;
+            }
+
+            .card-subject {
+                @apply(--paper-font-headline);
+                font-size: 20px;
+                display: inline-block;
+                margin-bottom: 5px;
+            }
+
+            #createbutton {
+                padding-top: 10px;
+            }
+        </style>
+
+        <iron-ajax id="createUserRequest"
+            auto=false
+            handle-as="json"
+            content-type="application/json"
+            url="add_user"
+            body='{"username" : "{{username}}", "display_name": "{{displayName}}", "tags": "{{tags}}", "contact_details": {"mobile": "{{mobile}}", "voip": "{{voip}}", "mail": "{{mail}}"}}'
+            method="POST"
+            handle-as="json"
+            debounce-duration="3000">
+        </iron-ajax>
+
+        <paper-card>
+            <div class="card-content">
+                <div class="card-subject">Create Profile:</div>
+
+                <paper-input id="username" label="מזהה משתמש" value="{{username}}"></paper-input>
+                <paper-input id="displayName" label="שם משתמש" value="{{displayName}}"></paper-input>
+                <paper-input id="tags" label="תגיות" value="{{tags}}"></paper-input>
+                <paper-input id="mobile" label="טלפון" value="{{mobile}}"></paper-input>
+                <paper-input id="voip" label="voip" value="{{voip}}"></paper-input>
+
+                <paper-input id="mail" label="מייל" value={{mail}}>
+                    <iron-icon icon="mail" slot="prefix"></iron-icon>
+                </paper-input>
+
+                <paper-button id="createbutton" raised class="primary-color" on-click="createProfile">Create</paper-button>
+            </div>
+        </paper-card>
+
+    </template>
+
+    <script>
+        class CreateInputForm extends Polymer.Element {
+            static get is() {
+                return 'create-input-form';
+            }
+
+            static get properties() {
+                return {
+                    username: {
+                        type: String,
+                        value: ""
+                    },
+                    displayName: {
+                        type: String,
+                        value: ""
+                    },
+                    tags: {
+                        type: String,
+                        value: ""
+                    },
+                    mobile: {
+                        type: String,
+                        value: ""
+                    },
+                    voip: {
+                        type: String,
+                        value: ""
+                    },
+                    mail: {
+                        type: String,
+                        value: ""
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+            }
+
+            createProfile() {
+                this.$.createUserRequest.generateRequest();
+            }
+        }
+
+        customElements.define(CreateInputForm.is, CreateInputForm);
+
+    </script>
+</dom-module>

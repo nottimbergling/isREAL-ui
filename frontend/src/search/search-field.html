@@ -1,0 +1,114 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="../shared-styles.html">
+<link rel="import" href="select-list.html">
+
+<dom-module id="search-field">
+    <template>
+        <style include="shared-styles">
+            :host {
+
+            }
+
+            paper-card {
+                margin-bottom: 15px;
+                width: 100%;
+            }
+
+            paper-button {
+                float: left;
+                margin-bottom: 9px;
+            }
+
+            select-list {
+                width: 40%;
+            }
+
+            .card-content {
+                width: 97.6%;
+                display: inline-flex;
+                padding-bottom: 0;
+                padding-top: 8px;
+            }
+
+            #searchtext {
+                width: 50%;
+            }
+
+            .card-content * {
+                padding-right: 2%;
+            }
+
+        </style>
+
+        <!-- <h1>input form</h1> -->
+        <paper-card elevation="3">
+            <div class="card-content">
+                <paper-input id="searchtext" name="searchtext" label="Search Anything" value="{{freeText}}"></paper-input>
+                <select-list id="tags_field" name="tags_field"></select-list>
+                <paper-button raised class="primary-color" on-click="sendQuery">
+                    <iron-icon icon="icons:search"></iron-icon>
+                    SEARCH
+                </paper-button>
+            </div>
+        </paper-card>
+
+    </template>
+
+    <script>
+        class SearchField extends Polymer.Element {
+            static get is() {
+                return 'search-field';
+            }
+
+            static get properties() {
+                return {
+                    freeText: {
+                        type: String,
+                        value: ""
+                    }
+                };
+            }
+
+            ready(){
+                super.ready();
+                String.prototype.replaceAll = function(search, replacement) {
+                    var target = this;
+                    return target.replace(new RegExp(search, 'g'), replacement);
+                };
+            }
+
+            sendQuery() {
+                let query = this.createQuery();
+                console.log("Generates params:", query);
+                Events.fire(this, Events.search, query)
+            }
+
+            createQuery() {
+                let freeText = this.$.searchtext.value;
+                let tags = this.$.tags_field.$.listfield.value;
+                console.log(tags);
+                tags = tags.replaceAll(', ', '", "');
+                console.log(tags);
+                tags = tags.split(", ");
+                console.log(tags);
+                return {
+                    freeText: freeText,
+                    tags: tags,
+                    users: [],
+                    username: Globals.user.get()
+                }
+            }
+        }
+
+        customElements.define(SearchField.is, SearchField);
+    </script>
+</dom-module>

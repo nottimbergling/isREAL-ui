@@ -1,0 +1,98 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="page-top-lectures">
+    <template>
+        <style include="shared-styles">
+            :host {
+            }
+            div {
+                text-align: center;
+                direction: ltr;
+            }
+
+            table {
+                /*background-color: rgba(255, 167, 139, 0.86);*/
+                margin-left: 0%;
+                margin-right: 5%;
+                margin-bottom: 5%;
+                min-height: 18em;
+                max-height: 18em;
+                min-width: 25em;
+                max-width: 25em;
+                border-radius: 0.4em;
+            }
+
+            td {
+                border-style: none;
+            }
+
+            .rating {
+                color: #ff5400;
+            }
+
+
+
+
+        </style>
+        <div class="quarter-container">
+            <h2>Top Lectures</h2>
+            <!-- <paper-card> -->
+                <table class="rwd-table">
+                    <tr>
+                        <td><iron-icon class$="[[star0]] rating" icon="star"></iron-icon>
+                        <span class="rating">5.0</span></td>
+                        <td><span class="fun">fun</span></td>
+                        <td><a href="/lecture/5942ff128537129e10e0d6d1" ><span class="tooltip">איך לשגר טיל
+                        <span class="tooltiptext">descritpion description description descrtion descrition</span>
+                        </span></a></td>
+                    </tr>
+                    <tr>
+                        <td><iron-icon class$="[[star0]] rating" icon="star"></iron-icon>
+                        <span class="rating">4.2</span></td>
+                        <td><span class="fun">fun</span></td>
+                        <td><a href="/lecture/5947b02f17fb1787accd9b0f" ><span class="tooltip">החיים על פי דן
+                        <span class="tooltiptext">Tooltip text</span>
+                        </span></a></td>
+                    </tr>
+                    <tr>
+                        <td><iron-icon class$="[[star0]] rating" icon="star"></iron-icon>
+                        <span class="rating">4.1</span></td>
+                        <td><span class="fun">fun</span></td>
+                        <td><a href="/lecture/5942ff128537129e10e0d6d1" ><span class="tooltip">למה החתול נפל
+                            <span class="tooltiptext">Tooltip text</span>
+                        </span></a></td>
+                    </tr>
+                    <tr>
+                        <td><iron-icon class$="[[star0]] rating" icon="star"></iron-icon>
+                        <span class="rating">4.1</span></td>
+                        <td><span class="develop">develop</span></td>
+                        <td><a href="/lecture/59488aa78537129e10e14381" ><span class="tooltip">פייתון מתקדם
+                        <span class="tooltiptext">Tooltip text</span>
+                        </span></a></td>
+                    </tr>
+                    <tr>
+                        <td><iron-icon class$="[[star0]] rating" icon="star"></iron-icon>
+                        <span class="rating">2.2</span></td>
+                        <td><span class="fun">fun</span></td>
+                        <td><a href="/lecture/59488aa78537129e10e14381" ><span class="tooltip"> ביג דאטה אין דה קלאוד
+                        <span class="tooltiptext">Tooltip text</span>
+                        </span></a></td>
+                    </tr>
+                </table>
+            <!-- </paper-card> -->
+        </div>
+    </template>
+
+    <script>
+        class TopLecturesPage extends Polymer.Element {
+            static get is() {
+                return 'page-top-lectures';
+            }
+        }
+        customElements.define(TopLecturesPage.is, TopLecturesPage);
+    </script>
+</dom-module>

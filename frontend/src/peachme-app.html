@@ -1,0 +1,302 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../bower_components/app-menu/app-menu.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="shortcut-icons.html">
+<link rel="lazy-import" href="page-search.html">
+<link rel="lazy-import" href="page-spaces.html">
+<link rel="lazy-import" href="page-profile.html">
+<link rel="lazy-import" href="page-createlecture.html">
+<link rel="lazy-import" href="page-createuser.html">
+<link rel="lazy-import" href="page-lecture.html">
+<link rel="lazy-import" href="page-404.html">
+<link rel="import" href="page-loading.html">
+
+
+<dom-module id="peachme-app">
+    <template>
+        <style include="shared-styles">
+            :host {
+                --app-primary-color: #FF5722;
+                --app-secondary-color: white;
+            }
+
+            iron-pages {
+                padding: 10px;
+            }
+
+            app-header {
+                color: var(--app-secondary-color);
+                background-color: var(--app-primary-color);
+            }
+
+            paper-icon-button + [main-title] {
+                margin-left: 24px;
+            }
+
+            paper-progress {
+                display: block;
+                width: 100%;
+                --paper-progress-active-color: rgba(255, 255, 255, 0.5);
+                --paper-progress-container-color: transparent;
+            }
+
+
+            app-drawer {
+                --app-drawer-scrim-background: rgba(0, 0, 0, 0.2);
+                --app-drawer-content-container: {
+                    background-color: #ffffff;
+                }
+            }
+
+
+            app-menu {
+                --app-menu-color: #616161;
+                --primary-color: var(--app-primary-color);
+                --app-menu-selected-bg-color: rgba(0, 0, 0, 0.05);
+            }
+
+            .drawer-menu-text {
+                font-size: 16px;
+            }
+
+            .drawer-image {
+                margin-top: 30px;
+                margin-left: 52px;
+                margin-bottom: 20px;
+                width: 150px;
+                height: 150px;
+            }
+        </style>
+
+        <app-location route="{{route}}"></app-location>
+        <app-route
+                route="{{route}}"
+                pattern="[[rootPattern]]:page"
+                data="{{routeData}}"
+                tail="{{subroute}}"></app-route>
+        <app-header reveals>
+
+            <app-toolbar>
+                <paper-icon-button icon="menu" on-click="_toggleDrawer"></paper-icon-button>
+                <div main-title>Peach Me</div>
+                <shortcut-icons></shortcut-icons>
+
+                <paper-progress value="10" hidden="[[!isLoading]]" indeterminate bottom-item></paper-progress>
+            </app-toolbar>
+
+        </app-header>
+
+        <iron-pages
+                selected="[[page]]"
+                attr-for-selected="name"
+                fallback-selection="404"
+                role="main">
+            <page-profile name="profile"></page-profile>
+            <page-search name="search"></page-search>
+            <page-spaces name="spaces"></page-spaces>
+            <page-createlecture name="createlecture"></page-createlecture>
+            <page-createuser name="createuser"></page-createuser>
+            <page-lecture name="lecture"></page-lecture>
+            <page-404 name="404"></page-404>
+            <page-loading name="loading"></page-loading>
+        </iron-pages>
+
+        <app-drawer id="drawer" swipe-open>
+            <iron-image sizing="contain" class="drawer-image" alt="Peach Me" src="frontend/images/peach-menu.png"></iron-image>
+            <app-menu selected="[[page]]" attr-for-selected="name" role="navigation">
+                <a name="profile" href="profile/[[user]]" class="app-menu-item">
+                    <span>
+                        <iron-icon icon="icons:account-circle"></iron-icon>
+                        <span class="drawer-menu-text">Profile</span>
+                    </span>
+                </a>
+                <a name="search" href="search" class="app-menu-item">
+                    <span>
+                        <iron-icon icon="icons:home"></iron-icon>
+                        <span class="drawer-menu-text">Home</span>
+                    </span>
+                </a>
+                <a name="spaces" href="spaces" class="app-menu-item">
+                    <span>
+                        <iron-icon icon="social:group"></iron-icon>
+                        <span class="drawer-menu-text">Spaces</span>
+                    </span>
+                </a>
+                <a name="createlecture" href="createlecture" class="app-menu-item">
+                    <span>
+                        <iron-icon icon="icons:add-circle"></iron-icon>
+                        <span class="drawer-menu-text">Create Lecture</span>
+                    </span>
+                </a>
+                <a name="createuser" href="createuser" class="app-menu-item">
+                    <span>
+                        <iron-icon icon="social:person-add"></iron-icon>
+                        <span class="drawer-menu-text">Add User</span>
+                    </span>
+                </a>
+            </app-menu>
+        </app-drawer>
+
+    </template>
+
+    <script>
+
+        let Events = {
+            fire: function(that, eventType, data){
+                that.dispatchEvent(new CustomEvent(eventType, {
+                    detail: data,
+                    bubbles: true,
+                    composed: true}
+                ));
+            },
+            subscribe: function(that, eventType, callback){
+                that.addEventListener(eventType, e => callback(e.detail));
+            },
+            isLoading: 'isLoading',
+            isProfileEditMode: 'isProfileEditMode',
+            search: 'search',
+
+            // Globals Changing
+            Globals: {
+                subrouteChanged: 'routeChanged',
+                userChanged: 'userChanged'
+            }
+        };
+
+
+        let Globals = {
+            subroute: {
+                _val: {
+                    prefix: "",
+                    path: ""
+                },
+                set: (value) => {
+                    Globals.subroute._val = value;
+                    Events.fire(this, Events.Globals.subrouteChanged, value);
+                },
+                get: () => {
+                    return Globals.subroute._val;
+                }
+            },
+            user: {
+                _val: "dddave",
+                set: (value) => {
+                    Globals.user._val = value;
+                    Events.fire(this, Events.Globals.userChanged, value);
+                },
+                get: () => {
+                    return Globals.user._val;
+                }
+            }
+        };
+
+        class PeachmeApp extends Polymer.Element {
+
+            static get is() {
+                return 'peachme-app';
+            }
+
+            static get properties() {
+                return {
+                    page: {
+                        type: String,
+                        reflectToAttribute: true,
+                        observer: '_pageChanged',
+                    },
+                    rootPattern: String,
+                    routeData: Object,
+                    subroute: String,
+                    isLoading: {
+                        type: Boolean,
+                        reflectToAttribute: true,
+                        value: false
+                    },
+                    user: {
+                        type: String,
+                        value: Globals.user.get()
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_routePageChanged(routeData.page)',
+                ];
+            }
+
+            constructor() {
+                super();
+
+                // Get root pattern for app-route, for more info about `rootPath` see:
+                // https://www.polymer-project.org/2.0/docs/upgrade#urls-in-templates
+                this.rootPattern = (new URL(this.rootPath)).pathname;
+            }
+
+            ready(){
+                super.ready();
+                Events.subscribe(this, Events.isLoading, (e) => {
+                    this.isLoading = e.loading;
+                });
+            }
+
+            _toggleDrawer(){
+                this.$.drawer.toggle();
+            }
+
+            _routePageChanged(page) {
+                // Polymer 2.0 will call with `undefined` on initialization.
+                // Ignore until we are properly called with a string.
+                if (page === undefined) {
+                    return;
+                }
+
+                // If no page was found in the route data, page will be an empty string.
+                // Default to 'search' in that case.
+                this.page = page || 'search';
+
+                // Close a non-persistent drawer when the page & route are changed.
+                if (!this.$.drawer.persistent) {
+                    this.$.drawer.close();
+                }
+            }
+
+            _pageChanged(page) {
+                Globals.subroute.set({
+                    prefix: this.subroute.prefix,
+                    path: this.subroute.path
+                });
+
+                // Load page import on demand. Show 404 page if fails
+                var resolvedPageUrl = this.resolveUrl('page-' + page + '.html');
+                Polymer.importHref(
+                    resolvedPageUrl,
+                    null,
+                    this._showPage404.bind(this),
+                    true);
+            }
+
+            _showPage404() {
+                this.page = '404';
+            }
+        }
+
+        window.customElements.define(PeachmeApp.is, PeachmeApp);
+    </script>
+</dom-module>

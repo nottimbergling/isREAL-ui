@@ -1,0 +1,147 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../shared-styles.html">
+<link rel="import" href="../page-loading.html">
+
+<dom-module id="input-form">
+    <template>
+        <style include="shared-styles">
+            :host {
+
+            }
+
+            .disabled {
+
+            }
+        </style>
+
+          <iron-ajax id="requestData"
+            handle-as="json"
+            content-type="application/json"
+            url="get_lecture_data"
+            body='{"lectureId" : "{{lectureId}}"}'
+            method="POST"
+            handle-as="json"
+            on-response="handleResponse"
+            debounce-duration="3000">
+
+        </iron-ajax>
+
+
+        <iron-ajax id="updateLecture"
+            handle-as="json"
+            content-type="application/json"
+            url="update_or_create_lecture"
+            body='{"username" : "{{username}}","title" : "{{title}}","description" : "{{description}}","tags" : "{{tags}}","category" : "{{category}}"  }'
+            method="POST"
+            handle-as="json"
+            debounce-duration="3000">
+
+        </iron-ajax>
+        
+        <page-loading id="loading" style="display: {{display_state}};"></page-loading>
+        <h1>Edit lacture: {{title}}</h1>
+
+        <paper-input id="username" disabled="{{!isEditMode}}" label="שם מרצה" value="{{username}}"></paper-input>
+        <paper-input id="title" disabled="{{!isEditMode}}" label="שם ההרצאה" value="{{title}}"></paper-input>
+        <paper-input id="description" disabled="{{!isEditMode}}" label="תיאור" value="{{description}}"></paper-input>
+        <paper-input id="category" disabled="{{!isEditMode}}" label="קטגוריה" value="{{category}}"></paper-input>
+        <paper-input id="tags" disabled="{{!isEditMode}}" label="תגיות" value="{{tags}}"></paper-input>
+
+        <paper-button id="mybutton" raised class="indigo" on-click="ChangeMode">ערוך פרטי משתמש</paper-button>
+
+
+
+
+
+
+
+    </template>
+
+    <script>
+        class InputForm extends Polymer.Element {
+            static get is() {
+                return 'input-form';
+            }
+
+            static get properties() {
+                return {
+                    isEditMode: {
+                        type: Boolean,
+                        value: false,
+                    },
+                    username: {
+                        type: String,
+                        value: ""
+                    },
+                    title: {
+                        type: String,
+                        value: ""
+                    },
+                    description: {
+                        type: String,
+                        value: ""
+                    },
+                    rating: {
+                        type: String,
+                        value: ""
+                    },
+                    comments: {
+                        type: String,
+                        value: ""
+                    },
+                    tags: {
+                        type: String,
+                        value: ""
+                    },
+                    category:{
+                        type: String,
+                        value: ""
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+                this.display_state = "block";
+                this.$.requestData.generateRequest();
+            }
+
+
+            ChangeMode() {
+                this.isEditMode =  ! this.isEditMode
+                if (this.$.mybutton.textContent!="שמור"){
+                    this.$.mybutton.textContent="שמור"
+
+                }else{
+                    this.$.mybutton.textContent="ערוך פרטי משתמש"
+                    this.$.updateLecture.generateRequest();
+
+                }
+            }
+
+            handleResponse(data) {
+                this.response = data.detail.response;
+                if (this.response.data != null){
+                    this.display_state = "none";
+                    this.username =this.response.data.username
+                    this.title =this.response.data.title
+                    this.description =this.response.data.description
+                    this.rating =this.response.data.rating
+                    this.comments =this.response.data.comments
+                    this.tags =this.response.data.tags
+                }
+
+
+            }
+
+
+
+        }
+
+        customElements.define(InputForm.is, InputForm);
+
+
+    </script>
+</dom-module>

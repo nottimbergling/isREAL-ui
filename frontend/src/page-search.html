@@ -1,0 +1,123 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="search/result-card.html">
+
+<link rel="import" href="search/search-field.html">
+<link rel="import" href="search/home_page/page-home.html">
+
+<dom-module id="page-search">
+    <template>
+        <style include="shared-styles">
+            :host {
+
+            }
+
+        </style>
+
+        <iron-ajax id="searchRequest"
+            handle-as="json"
+            content-type='application/json'
+            url="/search"
+            body="[[requestParams]]"
+            method="POST"
+            handle-as="jsonResponse"
+            on-response="searchResponse"
+            debounce-duration="3000">
+        </iron-ajax>
+
+
+        <search-field></search-field>
+        <page-home id="home"></page-home>
+
+        <page-loading id="loading" style="display: {{display_state}};"></page-loading>
+        <template hidden="[[!isInHomePage]]" is="dom-repeat" items="{{lectures}}">
+            <result-card
+                    lecture_subject="[[item.title]]"
+                    lecture_description="[[item.description]]"
+                    user_display_name="[[item.user.display_name]]"
+                    user_name="[[item.username]]"
+                    user_rating="5"
+                    user_phone="[[item.user.contact_details.mobile]]"
+                    user_mail="[[item.user.contact_details.mail]]"
+                    user_voip="[[item.user.contact_details.voip]]"
+                    lecture_tags='[[[{name: "karate", is_expert: false }, { name: "hotel", is_expert: false}]]]'>
+                        </result-card>
+        </template>
+
+
+    </template>
+
+    <script>
+        class SearchPage extends Polymer.Element {
+            static get is() {
+                return 'page-search';
+            }
+
+            static get properties(){
+                return {
+                    requestParams: {
+                        type: String,
+                        observer: "sendSearchRequest",
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    lectures: {
+                        type: Array,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    isInHomePage: {
+                        type: Boolean,
+                        value: true,
+                        observer: "removeHomePage"
+                    },
+                    display_state: {
+                        type: String,
+                        value: "none"
+                    }
+                }
+            }
+
+            removeHomePage(isInHomePage){
+                if (!isInHomePage){
+                    this.$.home.remove();
+                }
+            }
+
+            ready(){
+                super.ready();
+                var that = this;
+                Events.subscribe(this, Events.search, (query) => {
+                    that.isInHomePage = false;
+                    that.display_state = "block";
+                    console.log("Searchint with:", query);
+                    that.requestParams = JSON.stringify(query);
+
+                    console.log("requestParams are:", that.requestParams);
+                    that.$.searchRequest.generateRequest();
+                });
+            }
+            sendSearchRequest(params){
+
+            }
+
+            searchResponse(data){
+                let response = data.detail.response;
+                if (response.data != null){
+                    console.log("Response: ", response.data);
+                    for (var i=0; i<response.data.lectures.length; i++){
+                        // response.data.lectures[i].tags = [];
+                    }
+                    this.lectures = response.data.lectures;
+                    if (this.lectures != null && this.lectures.length > 0){
+
+                    }
+                }
+                this.display_state = "none";
+            }
+        }
+        customElements.define(SearchPage.is, SearchPage);
+    </script>
+</dom-module>

@@ -1,0 +1,33 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="profile/create-input-form.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="page-createuser">
+    <template>
+        <style include="shared-styles">
+            :host {
+
+            }
+        </style>
+        <create-input-form></create-input-form>
+    </template>
+
+    <script>
+        class CreateUserPage extends Polymer.Element {
+            static get is() {
+                return 'page-createuser';
+            }
+
+            static get properties() {
+                return {
+
+                };
+            }
+        }
+
+        customElements.define(CreateUserPage.is, CreateUserPage);
+    </script>
+</dom-module>

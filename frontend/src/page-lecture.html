@@ -1,0 +1,68 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="lecture/input-form.html">
+
+
+<dom-module id="page-lecture">
+    <template>
+        <style include="shared-styles">
+            :host {
+                width: 500px;
+            }
+            #myform{
+                width: 500px;
+
+            }
+        </style>
+        
+        
+        <input-form id="myform"></input-form>
+    </template>
+    <script>
+        class LecturePage extends Polymer.Element {
+            static get is() {
+                return 'page-lecture';
+            }
+
+            static getUserFromSubroute(path){
+                if (path.length > 0){
+                    let user = path.substring(1);
+                    console.log("User is:", user);
+                    return user;
+                }
+                return undefined;
+            }
+
+            static get properties() {
+                return {
+                lectureId:
+                    {
+                        type :String,
+                        value: this.getUserFromSubroute(Globals.subroute.get().path),
+                        observer : "updateForm"
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+                this.lectureId = this.getUserFromSubroute(Globals.subroute.get().path);
+            }
+
+            updateForm(id){
+                this.$.myform.lectureId = id;
+            }
+        }
+
+        customElements.define(LecturePage.is, LecturePage);
+
+
+
+
+    </script>
+</dom-module>

@@ -1,0 +1,55 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
+
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="profile/input-form.html">
+
+<dom-module id="page-profile">
+    <template>
+        <style include="shared-styles">
+            :host {
+
+            }
+        </style>
+
+        <input-form id="myform" user="[[user]]"></input-form>
+    </template>
+
+    <script>
+        class ProfilePage extends Polymer.Element {
+            static get is() {
+                return 'page-profile';
+            }
+
+            static getUserFromSubroute(path){
+                if (path.length > 0){
+                    let user = path.substring(1);
+                    console.log("User is:", user);
+                    return user;
+                }
+                return undefined;
+            }
+
+            static get properties() {
+                return {
+                    user: {
+                        type: String,
+                        value: this.getUserFromSubroute(Globals.subroute.get().path),
+                        observer : "Updateform"
+                    }
+                };
+            }
+
+
+            Updateform(user){
+                this.$.myform.username = user;
+            }
+        }
+
+        customElements.define(ProfilePage.is, ProfilePage);
+    </script>
+</dom-module>

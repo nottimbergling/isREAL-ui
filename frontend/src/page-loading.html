@@ -1,0 +1,35 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="paper-spinner.html">
+<link rel="import" href="paper-spinner-lite.html">
+
+<dom-module id="page-loading">
+    <template>
+        <style include="shared-styles">
+            :host {
+            }
+            div {
+                margin-left: 44%;
+            }
+
+            iron-image {
+                margin-left: -8%;
+            }
+        </style>
+        <div>
+            <h2>Loading please wait ...</h2>
+            <iron-image src="../frontend/images/loading_spinner.gif"></iron-image>
+        </div>
+    </template>
+    <script>
+        class LoadingPage extends Polymer.Element {
+            static get is() {
+                return 'page-loading';
+            }
+        }
+
+        customElements.define(LoadingPage.is, LoadingPage);
+    </script>
+</dom-module>

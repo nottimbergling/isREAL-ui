@@ -1,0 +1,96 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="page-top-users">
+    <template>
+        <style include="shared-styles">
+            :host {
+            }
+            div {
+                text-align: center;
+                direction: ltr;
+            }
+
+            table {
+                /*background-color: rgba(255, 167, 139, 0.86);*/
+                margin-left: -8%;
+                margin-right: 5%;
+                margin-bottom: 5%;
+                min-height: 18em;
+                max-height: 18em;
+                min-width: 25em;
+                max-width: 25em;
+                border-radius: 0.4em;
+            }
+
+            td {
+                border-style: none;
+            }
+
+            .rating {
+                color: #ff5400;
+            }
+
+        </style>
+        <div class="quarter-container">
+            <h2>Top Pitchers</h2>
+            <!-- <paper-card> -->
+                <table>
+
+                    <tr>
+                        <td><iron-icon class$="[[star0]] rating" icon="star"></iron-icon>
+                        <span class="rating">4.2</span></td>
+                        <td><span class="expert">python</span></td>
+                        <td><a href="/profile/danielh" class="tooltip">danielh
+                        <span class="tooltiptext">descritpion description description descrtion descrition</span>
+                        </a></td>
+                    </tr>
+                    <tr>
+                        <td><iron-icon class$="[[star0]] rating" icon="star"></iron-icon>
+                        <span class="rating">4.1</span></td>
+                        <td></td>
+                        <td><a href="/profile/itay" class="tooltip">itay
+                        <span class="tooltiptext">descritpion description description descrtion descrition</span>
+                        </a></td>
+                    </tr>
+                    <tr>
+                        <td><iron-icon class$="[[star0]] rating" icon="star"></iron-icon>
+                        <span class="rating">3.8</span></td>
+                        <td></td>
+                        <td><a href="/profile/daniel" class="tooltip">daniel
+                        <span class="tooltiptext">descritpion description description descrtion descrition</span>
+                        </a></td>
+                    </tr>
+                    <tr>
+                        <td><iron-icon class$="[[star0]] rating" icon="star"></iron-icon>
+                        <span class="rating">3.6</span></td>
+                        <td><span class="expert">agile</span></td>
+                        <td><a href="/profile/אריק" class="tooltip">אריק
+                        <span class="tooltiptext">descritpion description description descrtion descrition</span>
+                        </a></td>
+                    </tr>
+                    <tr>
+                        <td><iron-icon class$="[[star0]] rating" icon="star"></iron-icon>
+                        <span class="rating">3.6</span></td>
+                        <td></td>
+                        <td><a href="/profile/בטהובן" class="tooltip">בטהובן
+                        <span class="tooltiptext">descritpion description description descrtion descrition</span>
+                        </a></td>
+                    </tr>
+                </table>
+            <!-- </paper-card> -->
+        </div>
+    </template>
+
+    <script>
+        class TopUsersPage extends Polymer.Element {
+            static get is() {
+                return 'page-top-users';
+            }            
+        }
+        customElements.define(TopUsersPage.is, TopUsersPage);
+    </script>
+</dom-module>

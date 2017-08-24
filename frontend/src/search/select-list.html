@@ -1,0 +1,158 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="select-list">
+    <template>
+        <style include="shared-styles">
+            :host {
+
+            }
+
+            paper-dialog, paper-dialog-scrollable {
+                margin-left: 0;
+                margin-right: 0;
+                padding-right: 0;
+                padding-left: 0;
+                overflow: hidden;
+            }
+        </style>
+        
+        <iron-ajax id="requestData"
+            handle-as="json"
+            url="/get_all_tags"
+            body=''
+            method="POST"
+            handle-as="json"
+            on-response="getAllTags"
+            debounce-duration="3000">
+        </iron-ajax>
+
+        <paper-input id="listfield" name="listfield" on-click="_openDialog" on-focus="_openDialog" label="Tags"></paper-input>
+        <!--no-overlap -->
+        <paper-dialog id="dialog" horizontal-align="left" vertical-align="top">
+            <paper-dialog-scrollable>
+                <paper-item>
+                    <paper-input id="search" label="Search" value="{{searchText}}"></paper-input>
+                </paper-item>
+                <paper-listbox id="itemslist">
+                    <template is="dom-repeat" items="{{items}}">
+                        <paper-item hidden="[[item.hidden]]">
+                            <paper-checkbox checked="{{item.checked::change}}">
+                                {{item.itemName}}
+                            </paper-checkbox>
+                        </paper-item>
+                    </template>
+                </paper-listbox>
+            </paper-dialog-scrollable>
+        </paper-dialog>
+    </template>
+
+    <script>
+        class SelectList extends Polymer.Element {
+            static get is() {
+                return 'select-list';
+            }
+
+            static get properties() {
+                return {
+                    searchText: {
+                        type: String,
+                        value: "",
+                        observer: "filterItems"
+                    },
+                    items: {
+                        type: Array,
+                        value: [
+                            {
+                                itemName: "nothing1",
+                                checked: false,
+                                hidden: false
+                            },
+                            {
+                                itemName: "nothing2",
+                                checked: false,
+                                hidden: false
+                            },
+                            {
+                                itemName: "nothing3",
+                                checked: true,
+                                hidden: false
+                            }
+                        ],
+                        notify: true,
+                        reflectToAttribute: true
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    'generateListOfTags(items.*)'
+                ]
+            }
+
+            filterItems(text){
+                for (let i=0; i<this.items.length; i++){
+                    if (text == "" || this.items[i].itemName.indexOf(text) != -1 || this.items[i].checked){
+                        this.set('items.'+i+'.hidden', false);
+                    }
+                    else{
+                        this.set('items.'+i+'.hidden', true);
+                        this.set('items.'+i+'.checked', false);
+                    }
+                }
+            }
+
+            generateListOfTags(){
+                this.filterItems(this.searchText);
+                let list = "";
+                for (let i=0; i<this.items.length; i++){
+                    if (this.items[i].checked){
+                        list += this.items[i].itemName + ", ";
+                    }
+                }
+                list = list.substr(0, list.length - 2);
+                this.$.listfield.value = list;
+            }
+
+
+            _openDialog() {
+                setTimeout(() => {
+                    this.$.dialog.positionTarget = this.$.listfield;
+                    this.$.dialog.open();
+                }, 0);
+            }
+
+            ready() {
+                super.ready();
+                this.$.requestData.generateRequest();
+            }
+
+            getAllTags(data) {
+                if (data.detail.response["status"] != "success") {
+                    return undefined;
+                }
+                var all_tags = data.detail.response["data"];
+                this.items = [];
+                for (var i = 0; i < all_tags.length; i++) {
+                    this.items.push({
+                        itemName: all_tags[i]["tag_name"],
+                        checked: false,
+                        hidden: false
+                    });
+                }
+                this.generateListOfTags();
+            }
+        }
+
+        customElements.define(SelectList.is, SelectList);
+    </script>
+</dom-module>
