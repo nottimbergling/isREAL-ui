@@ -13,11 +13,11 @@ logger_path = None
 frontend_path = "../frontend/"
 
 
-mongo_server = "ds127802.mlab.com"
-database = "peachme"
-port = 27802
-user = "peachme_user"
-password = "Password1"
+mongo_server = "ds157233.mlab.com"
+database = "isreal"
+port = 57233
+user = "isreal"
+password = "isreal"
 
 # Environment configs
 prod_config = {

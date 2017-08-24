@@ -1,6 +1,6 @@
 import json
 
-from backend.entities.peach_response import PeachResponse
+from backend.entities.isreal_response import IsrealResponse
 from backend.errors.api_errors import ApiError
 from backend.errors.unexpected_error import UnexpectedError
 from functools import wraps
@@ -18,14 +18,14 @@ def response_adapter_wrapper(mimetype="text/plain"):
                 if type(func_result) is Response:
                     return func_result
 
-                response = PeachResponse(func_result)
+                response = IsrealResponse(func_result)
 
             except ApiError as err:
-                response = PeachResponse(err.dictify(),"error", err.status_code, err.extra_headers_dict)
+                response = IsrealResponse(err.dictify(), "error", err.status_code, err.extra_headers_dict)
 
             except Exception as error:
                 err = UnexpectedError(error)
-                response = PeachResponse(err.dictify(),"error", err.status_code, err.extra_headers_dict)
+                response = IsrealResponse(err.dictify(), "error", err.status_code, err.extra_headers_dict)
 
             return _make_http_response(response.dictify(),response.http_status_code,response.http_extra_headers,mimetype)
         return wrapper
@@ -36,7 +36,7 @@ def response_adapter_wrapper(mimetype="text/plain"):
 def _make_http_response(content=None, status_code=200, extra_headers=None, mimetype="text/plain"):
 
     extra_headers= extra_headers or {}
-    extra_headers["Access-Control-Allow-Origin"] = "http://localhost:8000/*"
+    extra_headers["Access-Control-Allow-Origin"] = "https://publish.twitter.com/*"
     if content is None:
         content_string = ""
         mimetype = "text/plain"

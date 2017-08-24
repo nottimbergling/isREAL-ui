@@ -1,28 +1,15 @@
 import inspect
-import json
-import sys
-import json
 import os
-from backend import config
-from backend.adapters import request_adapter
+import sys
+
+from flask import Flask, send_file, redirect
+
+from backend import config, dal
 from backend.adapters.request_adapter import request_adapter_wrapper
 from backend.adapters.response_adapter import response_adapter_wrapper
 from backend.config import frontend_path
-from backend.dal.functions.searching import get_exact_search_results, get_approximated_search_results
-from backend.dal.mongo_client.mongodb_client import _recursive_convert_object_id_to_string
 from backend.entities.base_request import BaseRequest
-from backend.entities.lecture_data_request import LectureDataRequest
-from backend.entities.search_request import SearchRequest
-from flask import Flask, send_file, request, Response, redirect
-from backend.entities.update_lecture_data_request import UpdateLectureDataRequest
-from backend.entities.user_data_request import UserDataRequest
 from backend.logs.logger import logger
-from backend.dal.functions.spaces_and_instances import get_all_spaces
-from backend.dal.functions.lectures_and_users import *
-from backend.entities.base_request import BaseRequest
-from backend.entities.user_insert_request import InsertUser, InsertLecture, InsertTag
-from bson.objectid import ObjectId
-from backend.dal.functions import lectures_and_users
 
 sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
 
@@ -63,98 +50,106 @@ def send_static_file(path):
         return redirect("/404")
 
 
-@app.route('/get_spaces', methods=['POST'])
+@app.route('/posts/get_new', methods=['POST'])
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
-def get_spaces(request):
-    all_sapces = get_all_spaces()
-    return {"spaces": all_sapces}
+def get_new_posts(request):
+    pass
 
 
-@app.route('/search', methods=['POST'])
-@response_adapter_wrapper("application/json")
-@request_adapter_wrapper(SearchRequest)
-def search(request):
-    search_results = get_exact_search_results(request.username,request.users, request.tags, request.free_text)
-    return search_results
-
-@app.route('/search_approximate', methods=['POST'])
-@response_adapter_wrapper("application/json")
-@request_adapter_wrapper(SearchRequest)
-def search_approximate(request):
-    search_results = get_approximated_search_results(request.username,request.users, request.tags, request.free_text)
-    return search_results
-
-
-@app.route('/insert_user', methods=['POST'])
-@response_adapter_wrapper("application/json")
-@request_adapter_wrapper(InsertUser)
-def insert_user(request):
-    data = json.loads(request.data)
-    add_user(data["username"], data["display_name"], data["contact_details"], data["availability"], data["tags"])
-    return "success"
-
-
-
-
-
-@app.route('/insert_tag_for_user', methods=['POST'])
-@response_adapter_wrapper("application/json")
-@request_adapter_wrapper(InsertTag)
-def insert_tag_for_user():
-    data = json.loads(request.data)
-    add_tag_for_user(data["username"], data["tag_name"])
-    return "success"
-
-@app.route('/get_user_data', methods=['POST'])
-@response_adapter_wrapper("application/json")
-@request_adapter_wrapper(UserDataRequest)
-def get_user_data(request):
-    user_data=  lectures_and_users.get_user_data(request.username)
-    for user in user_data:
-        user = _recursive_convert_object_id_to_string(user)
-        return user
-    return None
-
-
-@app.route('/get_lecture_data', methods=['POST'])
-@response_adapter_wrapper("application/json")
-@request_adapter_wrapper(LectureDataRequest)
-def get_lecture_data(request):
-    return lectures_and_users.get_lecture_data(request.lecture_id)
-
-
-@app.route('/get_all_tags', methods=['POST'])
+@app.route('/posts/get_hot', methods=['POST'])
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
-def get_all_tags_data(request):
-    all_tags = get_all_tags()
-    return all_tags
+def get_hot_posts(request):
+    pass
 
-@app.route('/update_or_create_lecture', methods=['POST'])
-@response_adapter_wrapper("application/json")
-@request_adapter_wrapper(UpdateLectureDataRequest)
-def update_or_create_lecture(request):
-    if request.lecture_id is None:
-        return lectures_and_users.create_new_lecture(request.title,request.username,request.description,request.tags,request.category)
-    else:
-        return lectures_and_users.edit_lecture(request.lecture_id,request.title,request.username,request.description,request.tags,request.category)
 
-@app.route('/get_all_categories', methods=['POST'])
+@app.route('/posts/vote', methods=['POST'])
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
-def get_all_categories_data(request):
-    all_categories = get_all_categories()
-    return all_categories
+def vote(request):
+    pass
 
 
-@app.route('/update_user_data', methods=['POST'])
+@app.route('/posts/assign', methods=['POST'])
 @response_adapter_wrapper("application/json")
-@request_adapter_wrapper(UpdateLectureDataRequest)
-def update_user_data(request):
-    if request.lecture_id is None:
-        return lectures_and_users.create_new_user(request.title,request.username,request.description,request.tags,request.category)
-    else:
-        return lectures_and_users.edit_user_data(request.lecture_id,request.title,request.username,request.description,request.tags,request.category)
+@request_adapter_wrapper(BaseRequest)
+def assign(request):
+    pass
 
 
+@app.route('/posts/un_assign', methods=['POST'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def un_assign(request):
+    pass
+
+
+@app.route('/posts/create', methods=['PUT'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def create_post(request):
+    pass
+
+
+@app.route('/posts/delete', methods=['PUT'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def delete_post(request):
+    pass
+
+
+@app.route('/tags/get', methods=['POST'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def get_tags(request):
+    return dal.functions.tags.get_all()
+
+
+@app.route('/tags/add', methods=['POST'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def add_tag(request):
+    return dal.functions.tags.add(request.body["name"])
+
+
+@app.route('/tags/delete', methods=['POST'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def delete_tag(request):
+    return dal.functions.tags.delete(request.body["name"])
+
+
+@app.route('/tags/change_rating', methods=['POST'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def rate_tag(request):
+    return dal.functions.tags.change_rating(request.body["ratingDiff"])
+
+
+@app.route('/authors/get', methods=['POST'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def get_authors(request):
+    return dal.functions.authors.get_all()
+
+
+@app.route('/authors/add', methods=['POST'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def add_author(request):
+    return dal.functions.authors.add(request.body["name"])
+
+
+@app.route('/authors/delete', methods=['POST'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def delete_author(request):
+    return dal.functions.authors.delete(request.body["name"])
+
+
+@app.route('/authors/change_rating', methods=['POST'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def rate_author(request):
+    return dal.functions.authors.change_rating(request.body["ratingDiff"])
