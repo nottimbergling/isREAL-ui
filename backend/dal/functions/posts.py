@@ -5,7 +5,7 @@ from bson import ObjectId
 from backend.dal.mongo_client.mongodb_client import mongo_connection, get_all_documents_from_collection
 
 
-def add(url, tags, author_display_name, author_user_name,author_id, likes, retweets, posting_time):
+def add(url, tags, author_display_name, author_user_name, author_id, likes, retweets, posting_time):
     insertion_data = {
         "_id": url,
         "tags": tags,
@@ -14,7 +14,7 @@ def add(url, tags, author_display_name, author_user_name,author_id, likes, retwe
         "authorId": author_id,
         "exposure": [{datetime.datetime.now().strftime("%Y:%m:%d %h:%M:%S"): {"likes": likes, "retweets": retweets}}],
         "postingTime": posting_time,
-        "CreationDate": datetime.datetime.now().strftime("%Y:%m:%d %h:%M:%S"),
+        "creationDate": datetime.datetime.now().strftime("%Y:%m:%d %h:%M:%S"),
         "votes": 0
     }
     mongo_connection.posts.insert_one(insertion_data)
@@ -44,11 +44,21 @@ def get_new(tags=None, author=None):
     return get_all_documents_from_collection(posts)
 
 
-def get_hot():
-    posts = mongo_connection.posts.find({}).limit(20)
-    sorted(posts, key=rate_posts, reverse=True)
+def get_hot(tags, author):
+    # search_dict = {"creationDate": {"$gt": datetime.datetime.now() - datetime.timedelta(days=30)}}
+    search_dict = {}
+    if tags or author:
+        search_dict["$or"] = []
+    if tags:
+        for tag in tags:
+            search_dict["$or"].append({"tags": {"$regex": tag, "$options": "i"}})
+    if author:
+        search_dict["author"] = {"$regex": author, "$options": "i"}
+
+    posts = mongo_connection.posts.find(search_dict)
+    posts = sorted(posts, key=rate_posts, reverse=True)
     return get_all_documents_from_collection(posts)
 
 
-def rate_posts():
+def rate_posts(match):
     return 1

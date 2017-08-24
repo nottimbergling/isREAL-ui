@@ -50,18 +50,22 @@ def send_static_file(path):
         return redirect("/404")
 
 
-@app.route('/posts/get_new', methods=['POST'])
+@app.route('/posts/get/new', methods=['POST'])
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
 def get_new_posts(request):
-    return dal.functions.posts.get_new()
+    tags = request.body.get("tags")
+    author = request.body.get("author")
+    return dal.functions.posts.get_new(tags, author)
 
 
-@app.route('/posts/get_hot', methods=['POST'])
+@app.route('/posts/get/hot', methods=['POST'])
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
 def get_hot_posts(request):
-    return dal.functions.posts.get_hot()
+    tags = request.body.get("tags")
+    author = request.body.get("author")
+    return dal.functions.posts.get_hot(tags, author)
 
 
 @app.route('/posts/vote', methods=['POST'])
