@@ -52,7 +52,7 @@
         <!-- <h1>input form</h1> -->
         <paper-card elevation="3">
             <div class="card-content">
-                <paper-input id="searchtext" name="searchtext" label="Search Anything" value="{{freeText}}"></paper-input>
+                <paper-input id="searchtext" name="searchtext" label="Search By Tweet Author..." value="{{tweetAuthor}}"></paper-input>
                 <select-list id="tags_field" name="tags_field"></select-list>
                 <paper-button raised class="primary-color" on-click="sendQuery">
                     <iron-icon icon="icons:search"></iron-icon>
@@ -71,7 +71,7 @@
 
             static get properties() {
                 return {
-                    freeText: {
+                    tweetAuthor: {
                         type: String,
                         value: ""
                     }
@@ -93,7 +93,7 @@
             }
 
             createQuery() {
-                let freeText = this.$.searchtext.value;
+                let tweetAuthor = this.$.searchtext.value;
                 let tags = this.$.tags_field.$.listfield.value;
                 console.log(tags);
                 tags = tags.replaceAll(', ', '", "');
@@ -101,7 +101,7 @@
                 tags = tags.split(", ");
                 console.log(tags);
                 return {
-                    freeText: freeText,
+                    tweetAuthor: tweetAuthor,
                     tags: tags,
                     users: [],
                     username: Globals.user.get()

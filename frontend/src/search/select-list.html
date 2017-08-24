@@ -27,7 +27,7 @@
         
         <iron-ajax id="requestData"
             handle-as="json"
-            url="/get_all_tags"
+            url="/tags/get"
             body=''
             method="POST"
             handle-as="json"
@@ -35,7 +35,7 @@
             debounce-duration="3000">
         </iron-ajax>
 
-        <paper-input id="listfield" name="listfield" on-click="_openDialog" on-focus="_openDialog" label="Tags"></paper-input>
+        <paper-input id="listfield" name="listfield" on-click="_openDialog" on-focus="_openDialog" label="Search By Tags..."></paper-input>
         <!--no-overlap -->
         <paper-dialog id="dialog" horizontal-align="left" vertical-align="top">
             <paper-dialog-scrollable>
@@ -83,7 +83,7 @@
                             },
                             {
                                 itemName: "nothing3",
-                                checked: true,
+                                checked: false,
                                 hidden: false
                             }
                         ],
@@ -137,14 +137,17 @@
             }
 
             getAllTags(data) {
-                if (data.detail.response["status"] != "success") {
+                if (!data.detail.succeeded) {
+                    console.log("NON SUCCESS");
+                    console.log(data);
                     return undefined;
                 }
-                var all_tags = data.detail.response["data"];
+                console.log(data);
+                var all_tags = data.detail.xhr.response;
                 this.items = [];
                 for (var i = 0; i < all_tags.length; i++) {
                     this.items.push({
-                        itemName: all_tags[i]["tag_name"],
+                        itemName: all_tags[i]["_id"],
                         checked: false,
                         hidden: false
                     });
