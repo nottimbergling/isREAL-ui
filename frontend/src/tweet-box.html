@@ -1,0 +1,33 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/x-tweet/x-tweet.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="tweet-box">
+    <template>
+        <style include="shared-styles">
+            :host {
+            }
+        </style>
+        <x-tweet tweetid="{{tweetid}}" }}></x-tweet>
+    </template>
+    <script>
+        class TweetBox extends Polymer.Element {
+            static get is() {
+                return 'tweet-box';
+            }
+
+            static get properties() {
+                return {
+                    tweetid: {
+                        type: String,
+                        reflectToAttribute: true,
+                        notify: true
+                    }
+                }
+            }
+        }
+
+        customElements.define(TweetBox.is, TweetBox);
+    </script>
+</dom-module>
