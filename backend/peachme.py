@@ -1,6 +1,7 @@
 import inspect
 import os
 import sys
+from functools import wraps
 
 import tweepy
 from flask import Flask, request, redirect, url_for, session, flash
@@ -69,10 +70,20 @@ def perform_login():
 def logout():
     session.pop('screen_name', None)
     flash('You were signed out')
-    return redirect(request.referrer or url_for('/'))
+    return redirect("/")
+
+
+def skip_if_authorized(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        if session.get("screen_name"):
+            return redirect("/search")
+        return func(*args, *kwargs)
+    return wrapped
 
 
 @app.route('/authorized')
+@skip_if_authorized
 @twitter.authorized_handler
 def oauth_authorized(resp):
     next_url = request.args.get('next') or url_for('/')
