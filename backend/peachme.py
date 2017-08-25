@@ -124,7 +124,7 @@ def retweet(request):
 
     screen_name = api.statuses_lookup(id_=[tweet_id, ])[0].user.screen_name
     status = api.update_status('@{username} {content}'.format(username=screen_name, content=content), tweet_id)
-    dal.functions.comments.add(tweet_id, status.id, session["user_id"])
+    dal.functions.comments.add(tweet_id, str(status.id), session["user_id"])
     return status.id
 
 
