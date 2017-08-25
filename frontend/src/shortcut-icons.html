@@ -6,38 +6,38 @@
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="shortcut-icons">
-    <!--<template>-->
-        <!--<style include="shared-styles">-->
-            <!--:host {-->
-            <!--}-->
-            <!--#addNewUser, #addNeLecture {-->
-                <!--height: auto;-->
-                <!--width: 40% !important;-->
-                <!--margin-right: 3.5%;-->
-            <!--}-->
-        <!--</style>-->
-    <!--<div class="shortcut-menu">-->
-        <!--<paper-icon-button title="Add User" icon="accessibility" on-click="addNewUser"></paper-icon-button>-->
-        <!--<paper-icon-button title="Create Lecture" icon="add-circle" on-click="addNewLecture"></paper-icon-button>-->
-        <!--&lt;!&ndash;<iron-image src="../frontend/images/AddUserMale.png" alt="Add New User" title="Add New User" id="addNewUser" on-click="addNewUser"></iron-image>&ndash;&gt;-->
-        <!--&lt;!&ndash;<iron-image src="../frontend/images/date.png" id="addNeLecture" alt="Add New Lecture" title="Add New Lecture" on-click="addNewLecture"></iron-image>&ndash;&gt;-->
-    <!--</div>-->
-    <!--</template>-->
-    <!--<script>-->
-        <!--class ShortcutIconsPage extends Polymer.Element {-->
-            <!--static get is() {-->
-                <!--return 'shortcut-icons';-->
-            <!--}-->
+    <template>
+        <style include="shared-styles">
+            :host {
+            }
+            #logout, #addNeLecture {
+                height: auto;
+                width: 40% !important;
+                margin-right: 3.5%;
+            }
+        </style>
+    <div class="shortcut-menu">
+        <paper-icon-button title="Logout" icon="social:person" on-click="logout">Logout</paper-icon-button>
+        <paper-button title="Logout" on-click="logout">Logout
+        </paper-button>
 
-            <!--addNewUser() {-->
-                <!--top.location = "/createuser";-->
-            <!--}-->
+        <!--<iron-image src="../frontend/images/AddUserMale.png" alt="Add New User" title="Add New User" id="logout" on-click="logout"></iron-image>-->
+        <!--<iron-image src="../frontend/images/date.png" id="addNeLecture" alt="Add New Lecture" title="Add New Lecture" on-click="addNewLecture"></iron-image>-->
+    </div>
+    </template>
+    <script>
+        class ShortcutIconsPage extends Polymer.Element {
+            static get is() {
+                return 'shortcut-icons';
+            }
 
-            <!--addNewLecture() {-->
-                <!--top.location = "/createlecture";-->
-            <!--} -->
-        <!--}-->
+            logout() {
+                top.location = "/";
+            }
 
-        <!--customElements.define(ShortcutIconsPage.is, ShortcutIconsPage);-->
-    <!--</script>-->
+
+        }
+
+        customElements.define(ShortcutIconsPage.is, ShortcutIconsPage);
+    </script>
 </dom-module>

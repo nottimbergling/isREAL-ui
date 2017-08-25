@@ -2,6 +2,8 @@
 <link rel="import" href="../bower_components/x-tweet/x-tweet.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="tweet-box">
@@ -19,13 +21,13 @@
                 flex-direction: row;
             }
 
-            .rate {
+            #card {
                 background-color: var(--app-tweet-back-color);
 
             }
 
             .rating {
-                margin-top: 35%;
+                margin-top: 15%;
                 margin-left: 10px;
             }
 
@@ -35,6 +37,11 @@
 
             .down {
                 color: #b94a48;
+            }
+
+            #dropdownDialog {
+                width: 500px;
+                height: 300px;
             }
 
         </style>
@@ -50,16 +57,35 @@
                    on-response="updateVote"
                    debounce-duration="3000">
         </iron-ajax>
+        <iron-ajax id="sendComment"
+                   handle-as="json"
+                   content-type='application/json'
+                   url="/retweet"
+                   body="[[requestParams]]"
+                   method="POST"
+                   handle-as="json"
+                   on-response="retweeted"
+                   debounce-duration="3000">
+        </iron-ajax>
 
 
-        <paper-card class="rate">
+        <paper-toast id="toast" text="{{toastmessage}}"></paper-toast>
+
+        <paper-dialog id="dropdownDialog">
+            <h2>Dialog Title</h2>
+            <paper-textarea id="commenttext" label="Textarea label" rows="4" maxlength="100"></paper-textarea>
+            <center>
+                <paper-button raised on-click="send">Send</paper-button>
+            </center>
+        </paper-dialog>
+
+
+        <paper-card modal id="card">
             <div class="card-content">
                 <div>
                     <x-tweet tweetid="{{tweetid}}"></x-tweet>
                     <center>
-                        <paper-button id="commentbutton" raised class="primary-color" on-click="opencomment">
-                            Comment
-                        </paper-button>
+                        <paper-button raised on-click="open" style="color: #00acc1">Comment</paper-button>
                     </center>
 
                 </div>
@@ -96,10 +122,14 @@
                         reflectToAttribute: true,
                         notify: true
                     },
-                    requestParams:{
+                    requestParams: {
                         type: String,
                         notify: true,
                         reflectToAttribute: true
+                    },
+                    toastmessage:{
+                        type:String,
+                        value:"no message to display"
                     }
                 }
             }
@@ -110,7 +140,7 @@
                 this.$.downicon.disabled = true;
                 this.$.upicon.style.color = "#5a6063"
                 this.$.downicon.style.color = "#5a6063"
-                this.requestParams = JSON.stringify({"value" : 1, "postId": this.tweetid});
+                this.requestParams = JSON.stringify({"value": 1, "postId": this.tweetid});
                 this.$.generateVote.generateRequest()
 
             }
@@ -121,8 +151,38 @@
                 this.$.downicon.disabled = true;
                 this.$.upicon.style.color = "#5a6063"
                 this.$.downicon.style.color = "#5a6063"
-                this.requestParams = JSON.stringify({"value" : -1, "postId": this.tweetid});
+                this.requestParams = JSON.stringify({"value": -1, "postId": this.tweetid});
                 this.$.generateVote.generateRequest()
+
+            }
+
+            open() {
+                this.$.dropdownDialog.open()
+            }
+
+            send() {
+                this.requestParams = JSON.stringify({"tweetId": this.tweetid, "content": this.$.commenttext.value});
+
+                this.$.sendComment.generateRequest()
+            }
+
+            retweeted(data) {
+
+                let response = data.detail.response;
+                if (response.data != null){
+                    console.log("Response: ", response.data);
+
+                    let status= response.status;
+                    if (status=="success"){
+                        this.$.dropdownDialog.close();
+                        this.$.card.style.backgroundColor = "rgba(72, 179, 123, 0.42)"
+                    }else{
+                        this.toastmessage = response.data.description
+                        this.$.toast.open()
+                    }
+
+
+                }
 
             }
         }

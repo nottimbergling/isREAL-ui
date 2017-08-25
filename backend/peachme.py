@@ -6,13 +6,11 @@ from functools import wraps
 import tweepy
 from flask import Flask, request, redirect, url_for, session, flash
 from flask import send_file
-import tweepy
-from flask import Flask, request, redirect, url_for, session, flash
-from flask import send_file
-from flask.templating import render_template
 
-from backend import config, dal, consts
-from . flask_oauth import OAuth
+try:
+    from flask_oauth import OAuth
+except ImportError:
+    from .flask_oauth import OAuth
 
 from backend import config, dal, consts
 from backend.adapters.request_adapter import request_adapter_wrapper
@@ -29,7 +27,6 @@ logger.info(" ################## SEARCH STARTING ##################" +
             "\n - Configuration name: " + config.name)
 SECRET_KEY = "development key"
 app.secret_key = SECRET_KEY
-
 
 oauth = OAuth()
 
@@ -79,6 +76,7 @@ def skip_if_authorized(func):
         if session.get("screen_name"):
             return redirect("/search")
         return func(*args, *kwargs)
+
     return wrapped
 
 
@@ -91,6 +89,7 @@ def oauth_authorized(resp):
         flash(u'You denied the request to sign in.')
         return redirect(next_url)
 
+    session['user_id'] = resp['user_id']
     session['access_key'] = resp['oauth_token']
     session['access_secret'] = resp['oauth_token_secret']
     session['screen_name'] = resp['screen_name']
@@ -109,19 +108,29 @@ def oauth_authorized(resp):
     return redirect("/search")
 
 
-@app.route("/retweet/<tweet_id>/<content>")
-def retweet(content, tweet_id):
+@app.route('/retweet', methods=['POST'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def retweet(request):
     # tweetId = 900804629885222913
+    tweet_id = request.body.get("tweetId")
+    content = request.body.get("content")
+    if not validate_content(content):
+        raise ValueError("Your comment appears to be inappropriate. Please review your comment."
+                         "Remember, you're representing your country!")
+    global api
+    if not api:
+        raise Exception("Not Logged in")
+
     screen_name = api.statuses_lookup(id_=[tweet_id, ])[0].user.screen_name
-    res = api.update_status('@{username} {content}'.format(username=screen_name, content=content), tweetId)
-    return res
+    status = api.update_status('@{username} {content}'.format(username=screen_name, content=content), tweet_id)
+    dal.functions.comments.add(tweet_id, str(status.id), session["user_id"])
+    return status.id
 
 
-@app.route("/filter/<content>")
 def validate_content(content):
     from profanity import profanity
     return len(content) < 100 and not profanity.contains_profanity(content)
-
 
 
 @app.route("/")
@@ -171,6 +180,21 @@ def get_hot_posts(request):
     tags = request.body.get("tags")
     author = request.body.get("author")
     return dal.functions.posts.get_hot(tags, author)
+
+
+@app.route('/posts/get/mine', methods=['GET'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def get_history(request):
+    return dal.functions.comments.get_comments_by_user(session["user_id"])
+
+
+@app.route('/posts/get/bytweet', methods=['POST'])
+@response_adapter_wrapper("application/json")
+@request_adapter_wrapper(BaseRequest)
+def get_retweets(request):
+    tweet_id = request.body.get("tweet_id")
+    return dal.functions.comments.get_comments_by_tweet(tweet_id)
 
 
 @app.route('/posts/vote', methods=['POST'])

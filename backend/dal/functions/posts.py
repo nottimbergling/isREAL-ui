@@ -58,7 +58,7 @@ def get_new(tags=None, author=None):
     if author:
         search_dict["author"] = {"$regex": author, "$options": "i"}
 
-    posts = mongo_connection.posts.find(search_dict, sort=[("postingTime", -1)]).limit(20)
+    posts = mongo_connection.posts.find(search_dict, sort=[("postingTime", -1)]).limit(10)
     return get_all_documents_from_collection(posts)
 
 
@@ -75,7 +75,7 @@ def get_hot(tags, author):
 
     posts = mongo_connection.posts.find(search_dict)
     posts = sort_posts(posts)
-    # posts = sorted(posts, key=rate_posts, reverse=True)
+
     return get_all_documents_from_collection(posts)
 
 
@@ -118,18 +118,3 @@ def filter_posts(posts, max_to_get=20):
         if unique and post not in unique_posts:
             unique_posts.append(post)
     return unique_posts[:max_to_get]
-
-    filter_bools = [False] * len(posts)
-    posts = posts[:200] # use only top 200 posts max.
-    for i in range(len(posts)):
-        x_out = list(map(lambda x: (posts[i] in x) or (x in posts[i]), posts))
-        x_out[i] = False # dont filter itself.
-        filter_bools = [(filter_bools[i] or x_out[i]) for i in range(len(posts))]
-
-    i = 0
-    cnt = 0
-    res = []
-    while i < len(posts):
-        if not filter_bools[i]:
-            res.append(posts[i])
-    return res[:max_to_get]
