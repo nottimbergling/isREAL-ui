@@ -26,9 +26,15 @@ def add(tweetid, text, tags, author_display_name, author_user_name, author_id, a
     }
 
     for tag in tags:
-        dal.functions.tags.change_rating(tag, 1)
+        try:
+            dal.functions.tags.add(tag)
+        except:
+            pass
 
-    dal.functions.authors.change_rating(author_display_name, 1)
+    try:
+        dal.functions.authors.add(author_display_name)
+    except:
+        pass
 
     mongo_connection.posts.insert_one(insertion_data)
     return True
@@ -58,7 +64,7 @@ def get_new(tags=None, author=None):
     if author:
         search_dict["author"] = {"$regex": author, "$options": "i"}
 
-    posts = mongo_connection.posts.find(search_dict, sort=[("creationTime", -1)]).limit(20)
+    posts = mongo_connection.posts.find(search_dict, sort=[("postingTime", -1)]).limit(20)
 
     # newest_post = []
     # for post in posts:
