@@ -187,18 +187,19 @@ def vote(request):
 @request_adapter_wrapper(BaseRequest)
 def create_post(request):
     tweetid = request.body["tweetId"]
+    text = request.body["text"]
     tags = request.body["tags"]
     author_user_name = request.body["authorUserName"]
     author_display_name = request.body["authorDisplayName"]
     author_id = request.body["authorId"]
+    author_followers = request.body["authorFollowers"]
     likes = request.body["likes"]
     retweets = request.body["retweets"]
     posting_time = request.body["tweetPostingTime"]
     search_type = request.body["searchType"]
-    nlp_score = request.body["nlpScore"]
 
-    return dal.functions.posts.add(tweetid, tags, author_display_name, author_user_name, author_id, likes, retweets,
-                                   posting_time, search_type, nlp_score)
+    return dal.functions.posts.add(tweetid, text, tags, author_display_name, author_user_name, author_id, author_followers,
+                                   likes, retweets, posting_time, search_type)
 
 
 @app.route('/posts/delete', methods=['PUT'])
