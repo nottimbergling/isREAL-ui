@@ -95,8 +95,41 @@ def sort_posts(posts):
 
     ordered_ids = get_knn_model(status_to_data)
     ordered_posts = [id_to_post[ordered_id] for ordered_id in ordered_ids]
-
+    ordered_posts = filter_posts(ordered_posts, 20)
     return ordered_posts
 
-def rate_posts(post):
-    return 1
+
+def filter_posts(posts, max_to_get=20):
+    unique_posts = []
+    posts = posts[:100]
+    for i in range(len(posts)):
+        post = posts[i]
+        unique = True
+        for j in range(len(posts)):
+            second_post = posts[j]
+            if i >= j:
+                continue
+            if post["_id"] == second_post["_id"]:
+                continue
+            if post["text"] == second_post["text"]:
+                unique = False
+            if (second_post["text"] in post["text"]) or (post['text'] in second_post['text']):
+                unique = False
+        if unique and post not in unique_posts:
+            unique_posts.append(post)
+    return unique_posts[:max_to_get]
+
+    filter_bools = [False] * len(posts)
+    posts = posts[:200] # use only top 200 posts max.
+    for i in range(len(posts)):
+        x_out = list(map(lambda x: (posts[i] in x) or (x in posts[i]), posts))
+        x_out[i] = False # dont filter itself.
+        filter_bools = [(filter_bools[i] or x_out[i]) for i in range(len(posts))]
+
+    i = 0
+    cnt = 0
+    res = []
+    while i < len(posts):
+        if not filter_bools[i]:
+            res.append(posts[i])
+    return res[:max_to_get]
