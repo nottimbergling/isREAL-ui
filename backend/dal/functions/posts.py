@@ -2,13 +2,15 @@ import datetime
 
 from bson import ObjectId
 
+from backend import dal
+from backend.dal.functions import tags
 from backend.dal.mongo_client.mongodb_client import mongo_connection, get_all_documents_from_collection
 
 
-def add(url, tags, author_display_name, author_user_name, author_id, likes, retweets, posting_time, search_type,
+def add(tweetid, tags, author_display_name, author_user_name, author_id, likes, retweets, posting_time, search_type,
         nlp_score):
     insertion_data = {
-        "_id": url,
+        "_id": tweetid,
         "tags": tags,
         "authorDisplayName": author_display_name,
         "authorUserName": author_user_name,
@@ -20,6 +22,12 @@ def add(url, tags, author_display_name, author_user_name, author_id, likes, retw
         "nlpScore": nlp_score,
         "votes": 0
     }
+
+    for tag in tags:
+        dal.functions.tags.change_rating(tag, 1)
+
+    dal.functions.authors.change_rating(author_display_name, 1)
+
     mongo_connection.posts.insert_one(insertion_data)
     return True
 
@@ -29,8 +37,13 @@ def delete(post_id):
 
 
 def vote(post_id, value):
-    post = mongo_connection.tags.find_one({"_id": ObjectId(post_id)})
-    return mongo_connection.tags.update_one({"_id": ObjectId(post)}, {"$set": {"votes": post["votes"] + value}})
+    post = mongo_connection.posts.find_one({"_id": post_id})
+    mongo_connection.posts.update_one({"_id": post_id}, {"$set": {"votes": post["votes"] + value}})
+    for tag in post["tags"]:
+        tags.change_rating(tag, value)
+
+    dal.functions.authors.change_rating(post["author"], 1)
+    return True
 
 
 def get_new(tags=None, author=None):

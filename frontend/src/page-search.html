@@ -1,8 +1,10 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
 
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="search/result-card.html">
+<link rel="import" href="../src/tweet-box.html">
 
 <link rel="import" href="search/search-field.html">
 <link rel="import" href="search/home_page/page-home.html">
@@ -11,40 +13,109 @@
     <template>
         <style include="shared-styles">
             :host {
+            }
+
+
+            .flex-container {
+              display: flex;
+              flex-wrap: wrap;
+            max-width: 100%;
+
+
+            }
+            .flex-container::after {
+              content: '';
+              width: 100%;
+            }
+
+            .column{
+                flex: 1;
+                margin-right: 10px;
+                margin-left: 10px;
+                background-color: var(--app-columns-color);
+
+            }
+            h1{
+
+                color: var(--app-column-text-color);
+                text-align: center;
+                margin-right: 20px;
+            }
+            .new{
+            }
+            .hot{
 
             }
 
         </style>
 
-        <iron-ajax id="searchRequest"
+        <iron-ajax id="searchRequestNew"
             handle-as="json"
             content-type='application/json'
-            url="/search"
+            auto
+            url="/posts/get/new"
             body="[[requestParams]]"
             method="POST"
             handle-as="jsonResponse"
-            on-response="searchResponse"
+            on-response="searchResponseNew"
+            debounce-duration="3000">
+        </iron-ajax>
+
+        <iron-ajax id="searchRequestHot"
+            handle-as="json"
+            content-type='application/json'
+            auto
+            url="/posts/get/hot"
+            body="[[requestParams]]"
+            method="POST"
+            handle-as="jsonResponse"
+            on-response="searchResponseHot"
             debounce-duration="3000">
         </iron-ajax>
 
 
         <search-field></search-field>
-        <page-home id="home"></page-home>
 
-        <page-loading id="loading" style="display: {{display_state}};"></page-loading>
-        <template hidden="[[!isInHomePage]]" is="dom-repeat" items="{{lectures}}">
-            <result-card
-                    lecture_subject="[[item.title]]"
-                    lecture_description="[[item.description]]"
-                    user_display_name="[[item.user.display_name]]"
-                    user_name="[[item.username]]"
-                    user_rating="5"
-                    user_phone="[[item.user.contact_details.mobile]]"
-                    user_mail="[[item.user.contact_details.mail]]"
-                    user_voip="[[item.user.contact_details.voip]]"
-                    lecture_tags='[[[{name: "karate", is_expert: false }, { name: "hotel", is_expert: false}]]]'>
-                        </result-card>
-        </template>
+        <page-loading id="loading" style="display:{{display_state}};"></page-loading>
+
+
+        <div class="flex-container">
+
+
+            <paper-card class="column new">
+            <div class="card-content">
+                        <h1>New Tweets</h1>
+                        <template is="dom-repeat" items="{{newposts}}">
+                        <tweet-box
+                                tweetid="[[item._id]]"
+                                votecount="[[item.votes]]"
+                                >
+                        </tweet-box>
+                        <div style="margin-bottom: 10px"></div>
+                    </template>
+            </div>
+            </paper-card>
+
+            <paper-card class="column hot">
+            <div class="card-content">
+                <center><h1>Hot Tweets</h1></center>
+                <template is="dom-repeat" items="{{hotposts}}">
+                    <tweet-box
+                            tweetid="[[item._id]]"
+                            votecount="[[item.votes]]"
+                            >
+                    </tweet-box>
+                <div style="margin-bottom: 10px"></div>
+
+                </template>
+            </div>
+            </paper-card>
+
+
+
+        </div>
+
+
 
 
     </template>
@@ -63,16 +134,17 @@
                         notify: true,
                         reflectToAttribute: true
                     },
-                    lectures: {
+                    hotposts: {
                         type: Array,
                         notify: true,
                         reflectToAttribute: true
                     },
-                    isInHomePage: {
-                        type: Boolean,
-                        value: true,
-                        observer: "removeHomePage"
+                    newposts: {
+                        type: Array,
+                        notify: true,
+                        reflectToAttribute: true
                     },
+
                     display_state: {
                         type: String,
                         value: "none"
@@ -80,17 +152,12 @@
                 }
             }
 
-            removeHomePage(isInHomePage){
-                if (!isInHomePage){
-                    this.$.home.remove();
-                }
-            }
+
 
             ready(){
                 super.ready();
                 var that = this;
                 Events.subscribe(this, Events.search, (query) => {
-                    that.isInHomePage = false;
                     that.display_state = "block";
                     console.log("Searchint with:", query);
                     that.requestParams = JSON.stringify(query);
@@ -103,20 +170,36 @@
 
             }
 
-            searchResponse(data){
+            searchResponseNew(data){
                 let response = data.detail.response;
                 if (response.data != null){
                     console.log("Response: ", response.data);
-                    for (var i=0; i<response.data.lectures.length; i++){
-                        // response.data.lectures[i].tags = [];
-                    }
-                    this.lectures = response.data.lectures;
-                    if (this.lectures != null && this.lectures.length > 0){
+
+                    this.newposts = response.data;
+                    console.log("posts: ", this.newposts);
+
+                    if (this.posts != null && this.posts.length > 0){
 
                     }
                 }
                 this.display_state = "none";
             }
+
+            searchResponseHot(data){
+                let response = data.detail.response;
+                if (response.data != null){
+                    console.log("Response: ", response.data);
+
+                    this.hotposts = response.data;
+                    console.log("posts: ", this.hotposts);
+
+                    if (this.posts != null && this.posts.length > 0){
+
+                    }
+                }
+                this.display_state = "none";
+            }
+
         }
         customElements.define(SearchPage.is, SearchPage);
     </script>
