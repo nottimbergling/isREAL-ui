@@ -5,15 +5,19 @@ from bson import ObjectId
 from backend import dal
 from backend.dal.functions import tags
 from backend.dal.mongo_client.mongodb_client import mongo_connection, get_all_documents_from_collection
+from backend.nlp import get_knn_model
 
 
-def add(tweetid, tags, author_display_name, author_user_name, author_id, likes, retweets, posting_time, search_type):
+def add(tweetid, text, tags, author_display_name, author_user_name, author_id, author_followers, likes, retweets,
+        posting_time, search_type):
     insertion_data = {
         "_id": tweetid,
+        "text": text,
         "tags": tags,
         "authorDisplayName": author_display_name,
         "authorUserName": author_user_name,
         "authorId": author_id,
+        "authorFollowers": author_followers,
         "exposure": [{datetime.datetime.now().strftime("%Y:%m:%d %h:%M:%S"): {"likes": likes, "retweets": retweets}}],
         "postingTime": posting_time,
         "creationDate": datetime.datetime.now().strftime("%Y:%m:%d %h:%M:%S"),
@@ -70,10 +74,47 @@ def get_hot(tags, author):
         search_dict["author"] = {"$regex": author, "$options": "i"}
 
     posts = mongo_connection.posts.find(search_dict)
-    posts = sorted(posts, key=rate_posts, reverse=True)
-    posts = posts[:10]
+    posts = sort_posts(posts)
+
     return get_all_documents_from_collection(posts)
 
 
-def rate_posts(match):
-    return 1
+def sort_posts(posts):
+    # status_to_data[status.id] = [status.text, status.favorite_count, status.retweet_count, status.user.followers_count]
+    status_to_data = dict()
+    id_to_post = dict()
+    posts = [p for p in posts]
+    for post in posts:
+        tweet_id = post["_id"]
+        text = post["text"]
+        likes = list(post["exposure"][-1].values())[-1]['likes']
+        retweets = list(post["exposure"][-1].values())[-1]['retweets']
+        followers = post["authorFollowers"]
+        id_to_post[tweet_id] = post
+        status_to_data[tweet_id] = [text, likes, retweets, followers]
+
+    ordered_ids = get_knn_model(status_to_data)
+    ordered_posts = [id_to_post[ordered_id] for ordered_id in ordered_ids]
+    ordered_posts = filter_posts(ordered_posts, 20)
+    return ordered_posts
+
+
+def filter_posts(posts, max_to_get=20):
+    unique_posts = []
+    posts = posts[:100]
+    for i in range(len(posts)):
+        post = posts[i]
+        unique = True
+        for j in range(len(posts)):
+            second_post = posts[j]
+            if i >= j:
+                continue
+            if post["_id"] == second_post["_id"]:
+                continue
+            if post["text"] == second_post["text"]:
+                unique = False
+            if (second_post["text"] in post["text"]) or (post['text'] in second_post['text']):
+                unique = False
+        if unique and post not in unique_posts:
+            unique_posts.append(post)
+    return unique_posts[:max_to_get]
