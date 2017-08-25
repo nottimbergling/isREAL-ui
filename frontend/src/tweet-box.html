@@ -71,9 +71,9 @@
 
         <paper-toast id="toast" text="{{toastmessage}}"></paper-toast>
 
-        <paper-dialog id="dropdownDialog">
-            <h2>Dialog Title</h2>
-            <paper-textarea id="commenttext" label="Textarea label" rows="4" maxlength="100"></paper-textarea>
+        <paper-dialog id="dropdownDialog" style="background-color: var(--app-columns-color);">
+            <h2>Retweet To Post</h2>
+            <paper-textarea id="commenttext" label="Comment Content" rows="4" maxlength="100" style="background-color: white"></paper-textarea>
             <center>
                 <paper-button raised on-click="send">Send</paper-button>
             </center>
