@@ -120,7 +120,7 @@ def retweet(request):
                          "Remember, you're representing your country!")
     global api
     if not api:
-        raise Exception("Not Logged in")
+        raise Exception("Session expired. Please sign-out and then sign-in again.")
 
     screen_name = api.statuses_lookup(id_=[tweet_id, ])[0].user.screen_name
     status = api.update_status('@{username} {content}'.format(username=screen_name, content=content), tweet_id)

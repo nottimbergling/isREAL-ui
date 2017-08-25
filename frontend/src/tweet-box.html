@@ -116,7 +116,7 @@
                     <x-tweet tweetid="{{tweetid}}"></x-tweet>
                     <center>
                         <paper-button raised on-click="open" style="color: #00acc1">Comment</paper-button>
-                        <paper-button raised on-click="openMessages" style="color: #00acc1">{{repliesMessage}}</paper-button>
+                        <paper-button raised on-click="openMessages" style="color: #00acc1">[[repliesMessage]]</paper-button>
                     </center>
 
                 </div>
@@ -214,7 +214,8 @@
                     console.log("Response: ", response.data);
 
                     this.replies = response.data;
-                    this.repliesMessage = "Read Replies (" + this.replies.length() + ")";
+                    this.repliesMessage = "Read Replies (" + this.replies.length + ")";
+                    console.log(this.repliesMessage);
                     console.log("posts: ", this.replies);
                     if (this.replies != null && this.replies.length > 0){
 
