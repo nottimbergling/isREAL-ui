@@ -108,7 +108,8 @@ def oauth_authorized(resp):
     return redirect("/search")
 
 
-@app.route("/retweet")
+@app.route('/retweet', methods=['POST'])
+@response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
 def retweet(request):
     # tweetId = 900804629885222913
@@ -117,6 +118,9 @@ def retweet(request):
     if not validate_content(content):
         raise ValueError("Your comment appears to be inappropriate. Please review your comment."
                          "Remember, you're representing your country!")
+
+    if not api:
+        raise Exception("Not Logged in")
 
     screen_name = api.statuses_lookup(id_=[tweet_id, ])[0].user.screen_name
     status = api.update_status('@{username} {content}'.format(username=screen_name, content=content), tweet_id)
