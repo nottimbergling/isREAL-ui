@@ -18,9 +18,9 @@ def add(tweetid, text, tags, author_display_name, author_user_name, author_id, a
         "authorUserName": author_user_name,
         "authorId": author_id,
         "authorFollowers": author_followers,
-        "exposure": [{datetime.datetime.now().strftime("%Y:%m:%d %h:%M:%S"): {"likes": likes, "retweets": retweets}}],
+        "exposure": [{datetime.datetime.now().strftime("%Y:%m:%d %H:%M:%S"): {"likes": likes, "retweets": retweets}}],
         "postingTime": posting_time,
-        "creationDate": datetime.datetime.now().strftime("%Y:%m:%d %h:%M:%S"),
+        "creationDate": datetime.datetime.now().strftime("%Y:%m:%d %H:%M:%S"),
         "searchType": search_type,
         "votes": 0
     }
@@ -81,7 +81,7 @@ def get_hot(tags, author):
         search_dict["author"] = {"$regex": author, "$options": "i"}
 
     posts = mongo_connection.posts.find(search_dict)
-    posts = sort_posts(posts)[:10]
+    posts = sort_posts(posts)[:20]
 
     return get_all_documents_from_collection(posts)
 

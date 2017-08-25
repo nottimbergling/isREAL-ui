@@ -193,7 +193,7 @@ def get_history(request):
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
 def get_retweets(request):
-    tweet_id = request.body.get("tweet_id")
+    tweet_id = request.body.get("tweetId")
     return dal.functions.comments.get_comments_by_tweet(tweet_id)
 
 
