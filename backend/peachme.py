@@ -118,7 +118,7 @@ def retweet(request):
     if not validate_content(content):
         raise ValueError("Your comment appears to be inappropriate. Please review your comment."
                          "Remember, you're representing your country!")
-
+    global api
     if not api:
         raise Exception("Not Logged in")
 
