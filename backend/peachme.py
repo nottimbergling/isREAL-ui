@@ -181,7 +181,7 @@ def get_hot_posts(request):
 @app.route('/posts/get/mine', methods=['POST'])
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
-def get_hot_posts(request):
+def get_history(request):
     user_id = request.body.get("user")
     return dal.functions.comments.get_comments_by_user(user_id)
 
@@ -189,7 +189,7 @@ def get_hot_posts(request):
 @app.route('/posts/get/bytweet', methods=['POST'])
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
-def get_hot_posts(request):
+def get_retweets(request):
     tweet_id = request.body.get("tweet_id")
     return dal.functions.comments.get_comments_by_tweet(tweet_id)
 
