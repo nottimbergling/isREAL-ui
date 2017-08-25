@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="tweet-box">
@@ -78,6 +79,8 @@
         </iron-ajax>
 
 
+        <paper-toast id="toast" text="{{toastmessage}}"></paper-toast>
+
         <paper-dialog id="dropdownDialog">
             <h2>Answer Tweet</h2>
             <paper-textarea id="commenttext" label="Textarea label" rows="4" maxlength="100"></paper-textarea>
@@ -143,6 +146,10 @@
                         notify: true,
                         reflectToAttribute: true
                     },
+                    toastmessage:{
+                        type:String,
+                        value:"no message to display"
+                    },
                     replies: {
                         notify: true,
                         reflectToAttribute: true
@@ -201,10 +208,24 @@
                 this.$.sendComment.generateRequest();
             }
 
-            retweeted() {
+            retweeted(data) {
 
-                this.$.dropdownDialog.close();
-                this.$.card.style.backgroundColor = "rgba(72, 179, 123, 0.62)";
+                let response = data.detail.response;
+                if (response.data != null){
+                    console.log("Response: ", response.data);
+
+                    let status= response.status;
+                    if (status=="success"){
+                        this.$.dropdownDialog.close();
+                        this.$.card.style.backgroundColor = "rgba(72, 179, 123, 0.42)"
+                    }else{
+                        this.toastmessage = response.data.description
+                        this.$.toast.open()
+                    }
+
+
+                }
+
             }
         }
         customElements.define(TweetBox.is, TweetBox);
