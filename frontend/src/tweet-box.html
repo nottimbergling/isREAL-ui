@@ -3,6 +3,9 @@
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/neon-animation/web-animations.html">
+<link rel="import" href="../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="shared-styles.html">
 
@@ -44,6 +47,11 @@
                 height: 300px;
             }
 
+            #messagesDialog {
+                position: fixed;
+                top: 20%;
+            }
+
         </style>
 
 
@@ -81,7 +89,7 @@
 
         <paper-toast id="toast" text="{{toastmessage}}"></paper-toast>
 
-        <paper-dialog id="dropdownDialog">
+        <paper-dialog id="dropdownDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
             <h2>Answer Tweet</h2>
             <paper-textarea id="commenttext" label="Textarea label" rows="4" maxlength="100"></paper-textarea>
             <center>
@@ -89,13 +97,15 @@
             </center>
         </paper-dialog>
 
-        <paper-dialog id="messagesDialog">
-            <h2>Retweets</h2>
-                    <template is="dom-repeat" items="{{replies}}">
-                        console.log(item);
-                        <x-tweet tweetid="[[item._id]]" conversation="none" expand="false">
+        <paper-dialog id="messagesDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+            <h2>User Replies</h2>
+            <template is="dom-repeat" items="{{replies}}">
+                    <x-tweet tweetid=[[item._id]] conversation="none" expand="false">
                     </x-tweet>
-                </template>
+           </template>
+            <template is="dom-if" if="{{!replies}}">
+                <div id="noRepliesMessage">There have been no replies to this comment, be the first one to reply!</div>
+            </template>
         </paper-dialog>
 
         <paper-card modal id="card">
@@ -104,7 +114,7 @@
                     <x-tweet tweetid="{{tweetid}}"></x-tweet>
                     <center>
                         <paper-button raised on-click="open" style="color: #00acc1">Comment</paper-button>
-                        <paper-button raised on-click="openMessages" style="color: #00acc1">Read Replies</paper-button>
+                        <paper-button raised on-click="openMessages" style="color: #00acc1">{{repliesMessage}}</paper-button>
                     </center>
 
                 </div>
@@ -151,8 +161,15 @@
                         value:"no message to display"
                     },
                     replies: {
+                        type: Array,
                         notify: true,
                         reflectToAttribute: true
+                    },
+                    repliesMessage: {
+                        type: String,
+                        notify: true,
+                        reflectToAttribute: true,
+                        value: "Read Replies"
                     }
                 }
             }
@@ -186,6 +203,7 @@
             openMessages() {
                 this.requestParams = JSON.stringify({"tweetId": this.tweetid});
                 this.$.fetchReplies.generateRequest();
+                this.$.messagesDialog.open();
             }
 
             receivedReplies(data) {
@@ -194,11 +212,10 @@
                     console.log("Response: ", response.data);
 
                     this.replies = response.data;
+                    this.repliesMessage = "Read Replies (" + this.replies.length() + ")";
                     console.log("posts: ", this.replies);
                     if (this.replies != null && this.replies.length > 0){
-                        this.$.messagesDialog.open();
-                    } else {
-                        this.replies = "There have been no replies to this comment, be the first one to reply!"
+
                     }
                 }
             }
