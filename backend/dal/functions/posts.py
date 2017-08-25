@@ -5,7 +5,8 @@ from bson import ObjectId
 from backend.dal.mongo_client.mongodb_client import mongo_connection, get_all_documents_from_collection
 
 
-def add(url, tags, author_display_name, author_user_name, author_id, likes, retweets, posting_time, search_type):
+def add(url, tags, author_display_name, author_user_name, author_id, likes, retweets, posting_time, search_type,
+        nlp_score):
     insertion_data = {
         "_id": url,
         "tags": tags,
@@ -16,6 +17,7 @@ def add(url, tags, author_display_name, author_user_name, author_id, likes, retw
         "postingTime": posting_time,
         "creationDate": datetime.datetime.now().strftime("%Y:%m:%d %h:%M:%S"),
         "searchType": search_type,
+        "nlpScore": nlp_score,
         "votes": 0
     }
     mongo_connection.posts.insert_one(insertion_data)
@@ -61,5 +63,5 @@ def get_hot(tags, author):
     return get_all_documents_from_collection(posts)
 
 
-def rate_posts(match):
+def rate_posts(post):
     return 1

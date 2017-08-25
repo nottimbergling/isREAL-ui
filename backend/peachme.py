@@ -90,12 +90,13 @@ def create_post(request):
     retweets = request.body["retweets"]
     posting_time = request.body["tweetPostingTime"]
     search_type = request.body["searchType"]
+    nlp_score = request.body["nlpScore"]
 
     for tag in tags:
         dal.functions.tags.add(tag)
 
     return dal.functions.posts.add(url, tags, author_display_name, author_user_name, author_id, likes, retweets,
-                                   posting_time, search_type)
+                                   posting_time, search_type, nl)
 
 
 @app.route('/posts/delete', methods=['PUT'])
