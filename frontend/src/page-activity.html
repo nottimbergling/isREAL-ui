@@ -1,0 +1,149 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="search/result-card.html">
+<link rel="import" href="../src/tweet-box.html">
+
+<link rel="import" href="search/search-field.html">
+<link rel="import" href="search/home_page/page-home.html">
+
+<dom-module id="page-activity">
+    <template>
+        <style include="shared-styles">
+            :host {
+            }
+
+
+            .flex-container {
+              display: flex;
+              flex-wrap: wrap;
+            max-width: 100%;
+
+
+            }
+            .flex-container::after {
+              content: '';
+              width: 100%;
+            }
+
+            .column{
+                flex: 1;
+                margin-right: 10px;
+                margin-left: 10px;
+                background-color: var(--app-columns-color);
+
+            }
+            h1{
+
+                color: var(--app-column-text-color);
+                text-align: center;
+                margin-right: 20px;
+            }
+            .new{
+            }
+            .hot{
+
+            }
+
+        </style>
+
+        <iron-ajax id="fetchActivity"
+            handle-as="json"
+            content-type='application/json'
+            auto
+            url="/posts/get/mine"
+            method="GET"
+            handle-as="jsonResponse"
+            on-response="handleActivityReceived"
+            debounce-duration="3000">
+        </iron-ajax>
+
+        <search-field></search-field>
+
+        <page-loading id="loading" style="display:{{display_state}};"></page-loading>
+
+
+        <div class="flex-container">
+            <paper-card class="column hot">
+            <div class="card-content">
+                <center><h1>My Activity</h1></center>
+                <template is="dom-repeat" items="{{posts}}">
+                    <tweet-box
+                            tweetid="[[item._id]]"
+                            votecount="0"
+                            >
+                    </tweet-box>
+                <div style="margin-bottom: 10px"></div>
+
+                </template>
+            </div>
+            </paper-card>
+
+
+
+        </div>
+
+    </template>
+
+    <script>
+        class ActivityPage extends Polymer.Element {
+            static get is() {
+                return 'page-activity';
+            }
+
+            static get properties(){
+                return {
+                    requestParams: {
+                        type: String,
+                        observer: "sendSearchRequest",
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+                    posts: {
+                        type: Array,
+                        notify: true,
+                        reflectToAttribute: true,
+                        value = [900804629885222913, 900804629885222913, 900804629885222913, 900804629885222913, 900804629885222913]
+                    },
+
+                    display_state: {
+                        type: String,
+                        value: "none"
+                    }
+                }
+            }
+
+            ready(){
+                super.ready();
+                var that = this;
+                Events.subscribe(this, Events.search, (query) => {
+                    that.display_state = "block";
+                    console.log("Searchint with:", query);
+                    that.requestParams = JSON.stringify(query);
+
+                    console.log("requestParams are:", that.requestParams);
+                    that.$.searchRequest.generateRequest();
+                });
+            }
+
+            handleActivityReceived(data){
+                let response = data.detail.response;
+                if (response.data != null){
+                    console.log("Response: ", response.data);
+
+                    this.posts = response.data;
+                    console.log("posts: ", this.posts);
+
+                    if (this.posts != null && this.posts.length > 0){
+
+                    }
+                }
+                this.display_state = "none";
+            }
+
+        }
+        customElements.define(ActivityPage.is, ActivityPage);
+    </script>
+</dom-module>

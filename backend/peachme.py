@@ -112,7 +112,7 @@ def oauth_authorized(resp):
 @request_adapter_wrapper(BaseRequest)
 def retweet(request):
     # tweetId = 900804629885222913
-    tweet_id = request.body.get("tweet_id")
+    tweet_id = request.body.get("tweetId")
     content = request.body.get("content")
     if not validate_content(content):
         raise ValueError("Your comment appears to be inappropriate. Please review your comment."
@@ -178,12 +178,11 @@ def get_hot_posts(request):
     return dal.functions.posts.get_hot(tags, author)
 
 
-@app.route('/posts/get/mine', methods=['POST'])
+@app.route('/posts/get/mine', methods=['GET'])
 @response_adapter_wrapper("application/json")
 @request_adapter_wrapper(BaseRequest)
 def get_history(request):
-    user_id = request.body.get("user")
-    return dal.functions.comments.get_comments_by_user(user_id)
+    return dal.functions.comments.get_comments_by_user(session["user_id"])
 
 
 @app.route('/posts/get/bytweet', methods=['POST'])
