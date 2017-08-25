@@ -56,6 +56,16 @@
                    on-response="updateVote"
                    debounce-duration="3000">
         </iron-ajax>
+        <iron-ajax id="fetchReplies"
+                   handle-as="json"
+                   content-type='application/json'
+                   url="/posts/get/bytweet"
+                   body="[[requestParams]]"
+                   method="POST"
+                   handle-as="json"
+                   on-response="receivedReplies"
+                   debounce-duration="3000">
+        </iron-ajax>
         <iron-ajax id="sendComment"
                    handle-as="json"
                    content-type='application/json'
@@ -69,13 +79,21 @@
 
 
         <paper-dialog id="dropdownDialog">
-            <h2>Dialog Title</h2>
+            <h2>Answer Tweet</h2>
             <paper-textarea id="commenttext" label="Textarea label" rows="4" maxlength="100"></paper-textarea>
             <center>
                 <paper-button raised on-click="send">Send</paper-button>
             </center>
         </paper-dialog>
 
+        <paper-dialog id="messagesDialog">
+            <h2>Retweets</h2>
+                    <template is="dom-repeat" items="{{replies}}">
+                        console.log(item);
+                        <x-tweet tweetid="[[item._id]]" conversation="none" expand="false">
+                    </x-tweet>
+                </template>
+        </paper-dialog>
 
         <paper-card modal id="card">
             <div class="card-content">
@@ -83,6 +101,7 @@
                     <x-tweet tweetid="{{tweetid}}"></x-tweet>
                     <center>
                         <paper-button raised on-click="open" style="color: #00acc1">Comment</paper-button>
+                        <paper-button raised on-click="openMessages" style="color: #00acc1">Read Replies</paper-button>
                     </center>
 
                 </div>
@@ -123,6 +142,10 @@
                         type: String,
                         notify: true,
                         reflectToAttribute: true
+                    },
+                    replies: {
+                        notify: true,
+                        reflectToAttribute: true
                     }
                 }
             }
@@ -142,27 +165,46 @@
                 this.votecount -= 1;
                 this.$.upicon.disabled = true;
                 this.$.downicon.disabled = true;
-                this.$.upicon.style.color = "#5a6063"
-                this.$.downicon.style.color = "#5a6063"
+                this.$.upicon.style.color = "#5a6063";
+                this.$.downicon.style.color = "#5a6063";
                 this.requestParams = JSON.stringify({"value": -1, "postId": this.tweetid});
-                this.$.generateVote.generateRequest()
+                this.$.generateVote.generateRequest();
 
             }
 
             open() {
-                this.$.dropdownDialog.open()
+                this.$.dropdownDialog.open();
             }
 
+            openMessages() {
+                this.requestParams = JSON.stringify({"tweetId": this.tweetid});
+                this.$.fetchReplies.generateRequest();
+            }
+
+            receivedReplies(data) {
+                let response = data.detail.response;
+                if (response.data != null){
+                    console.log("Response: ", response.data);
+
+                    this.replies = response.data;
+                    console.log("posts: ", this.replies);
+                    if (this.replies != null && this.replies.length > 0){
+                        this.$.messagesDialog.open();
+                    } else {
+                        this.replies = "There have been no replies to this comment, be the first one to reply!"
+                    }
+                }
+            }
             send() {
                 this.requestParams = JSON.stringify({"tweetId": this.tweetid, "content": this.$.commenttext.value});
 
-                this.$.sendComment.generateRequest()
+                this.$.sendComment.generateRequest();
             }
 
             retweeted() {
 
                 this.$.dropdownDialog.close();
-                this.$.card.style.backgroundColor = "rgba(72, 179, 123, 0.62)"
+                this.$.card.style.backgroundColor = "rgba(72, 179, 123, 0.62)";
             }
         }
         customElements.define(TweetBox.is, TweetBox);
