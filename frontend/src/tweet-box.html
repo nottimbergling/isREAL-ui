@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/x-tweet/x-tweet.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="tweet-box">
@@ -37,6 +38,11 @@
                 color: #b94a48;
             }
 
+            #dropdownDialog {
+                width: 500px;
+                height: 500px;
+            }
+
         </style>
 
 
@@ -50,16 +56,33 @@
                    on-response="updateVote"
                    debounce-duration="3000">
         </iron-ajax>
+        <iron-ajax id="sendComment"
+                   handle-as="json"
+                   content-type='application/json'
+                   url="/retweet"
+                   body="[[requestParams]]"
+                   method="POST"
+                   handle-as="json"
+                   on-response="retweeted"
+                   debounce-duration="3000">
+        </iron-ajax>
 
 
-        <paper-card class="rate">
+        <paper-dialog id="dropdownDialog">
+            <h2>Dialog Title</h2>
+            <paper-textarea id="commenttext" label="Textarea label" rows="4" maxlength="100"></paper-textarea>
+            <center>
+                <paper-button raised on-click="send">Send</paper-button>
+            </center>
+        </paper-dialog>
+
+
+        <paper-card modal class="rate">
             <div class="card-content">
                 <div>
                     <x-tweet tweetid="{{tweetid}}"></x-tweet>
                     <center>
-                        <paper-button id="commentbutton" raised class="primary-color" on-click="opencomment">
-                            Comment
-                        </paper-button>
+                        <paper-button raised on-click="open">Comment</paper-button>
                     </center>
 
                 </div>
@@ -96,7 +119,7 @@
                         reflectToAttribute: true,
                         notify: true
                     },
-                    requestParams:{
+                    requestParams: {
                         type: String,
                         notify: true,
                         reflectToAttribute: true
@@ -110,7 +133,7 @@
                 this.$.downicon.disabled = true;
                 this.$.upicon.style.color = "#5a6063"
                 this.$.downicon.style.color = "#5a6063"
-                this.requestParams = JSON.stringify({"value" : 1, "postId": this.tweetid});
+                this.requestParams = JSON.stringify({"value": 1, "postId": this.tweetid});
                 this.$.generateVote.generateRequest()
 
             }
@@ -121,9 +144,24 @@
                 this.$.downicon.disabled = true;
                 this.$.upicon.style.color = "#5a6063"
                 this.$.downicon.style.color = "#5a6063"
-                this.requestParams = JSON.stringify({"value" : -1, "postId": this.tweetid});
+                this.requestParams = JSON.stringify({"value": -1, "postId": this.tweetid});
                 this.$.generateVote.generateRequest()
 
+            }
+
+            open() {
+                this.$.dropdownDialog.open()
+            }
+
+            send() {
+                this.requestParams = JSON.stringify({"tweetId": this.tweetid, "content": this.$.commenttext.value});
+
+                this.$.sendComment.generateRequest()
+            }
+
+            retweeted() {
+
+                console.log("retweeted")
             }
         }
         customElements.define(TweetBox.is, TweetBox);

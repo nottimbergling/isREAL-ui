@@ -54,7 +54,7 @@ def get_new(tags=None, author=None):
     if author:
         search_dict["author"] = {"$regex": author, "$options": "i"}
 
-    posts = mongo_connection.posts.find(search_dict, sort=[("postingTime", -1)]).limit(20)
+    posts = mongo_connection.posts.find(search_dict, sort=[("postingTime", -1)]).limit(10)
     return get_all_documents_from_collection(posts)
 
 
@@ -71,6 +71,7 @@ def get_hot(tags, author):
 
     posts = mongo_connection.posts.find(search_dict)
     posts = sorted(posts, key=rate_posts, reverse=True)
+    posts = posts[:10]
     return get_all_documents_from_collection(posts)
 
 

@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/iron-image/iron-image.html">
 
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="search/result-card.html">
@@ -84,7 +85,8 @@
 
             <paper-card class="column new">
             <div class="card-content">
-                        <h1>New Tweets</h1>
+                <center><iron-image class="push_button"  style="width:420px;height: 80px;" sizing="contain" on-click="signIn"
+                         id="signin" src="../frontend/images/new-tweets.png"></iron-image></center>
                         <template is="dom-repeat" items="{{newposts}}">
                         <tweet-box
                                 tweetid="[[item._id]]"
@@ -98,7 +100,8 @@
 
             <paper-card class="column hot">
             <div class="card-content">
-                <center><h1>Hot Tweets</h1></center>
+                <center><iron-image class="push_button"  style="width:420px;height: 80px;" sizing="contain" on-click="signIn"
+                         id="signin" src="../frontend/images/hot-tweets.png"></iron-image></center>
                 <template is="dom-repeat" items="{{hotposts}}">
                     <tweet-box
                             tweetid="[[item._id]]"
