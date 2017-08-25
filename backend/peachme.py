@@ -20,7 +20,7 @@ from backend.entities.base_request import BaseRequest
 from backend.logs.logger import logger
 
 sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
-
+empty_session = session
 # initialize Flask
 app = Flask(__name__, static_folder="../")
 logger.info(" ################## SEARCH STARTING ##################" +
@@ -70,18 +70,18 @@ def logout():
     return redirect("/")
 
 
-def skip_if_authorized(func):
+def clear_session(func):
     @wraps(func)
     def wrapped(*args, **kwargs):
-        if session.get("screen_name"):
-            return redirect("/search")
+        if session.get('twitter_token'):
+            del session['twitter_token']
         return func(*args, *kwargs)
 
     return wrapped
 
 
 @app.route('/authorized')
-@skip_if_authorized
+@clear_session
 @twitter.authorized_handler
 def oauth_authorized(resp):
     next_url = request.args.get('next') or url_for('/')
