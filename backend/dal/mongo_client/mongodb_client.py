@@ -45,4 +45,4 @@ def run_function(function_name):
     return mongo_connection.eval(function, "daniel")
 
 
-mongo_connection = MongoDb(config.mongo_server, config.database, config.port).db
+mongo_connection = MongoDb(config.mongo_server, config.database, config.port, config.user, config.password).db
