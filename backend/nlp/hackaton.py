@@ -1,13 +1,12 @@
-import matplotlib.pyplot as plt
 import random
+
 import numpy as np
-from sklearn import datasets, linear_model
-from sklearn.neighbors import NearestNeighbors
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn import linear_model
 from sklearn.neighbors import KNeighborsRegressor
+
 from backend.nlp.hackaton_trainer import keywords
-from backend.nlp.hackaton_trainer import statuses_to_stats
 from backend.nlp.hackaton_trainer import statuses_to_ratings
+from backend.nlp.hackaton_trainer import statuses_to_stats
 
 texts_train = ['israel anti hamas bla bla', 'lol lol pwn lol',
          '1337 lol israel israel the best', 'anti-israel no no israel',
