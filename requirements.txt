@@ -3,7 +3,7 @@ profanity==1.1
 matplotlib==2.0.2
 schema==0.6.6
 pymongo==3.5.1
-numpy==1.13.1+mkl
+numpy==1.13.1
 tweepy==3.5.0
 Werkzeug==0.12.2
 httplib2==0.10.3
