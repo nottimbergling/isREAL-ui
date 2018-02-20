@@ -1,7 +1,11 @@
-pymongo >= 3.5.1
-schema >= 0.6.6
-flask
-tweepy
-httplib2
-oauth2
-profanity
+setuptools==36.2.7
+pymongo==3.5.1
+Flask==0.12.2
+python_oauth2==1.0.1
+schema==0.6.6
+profanity==1.1
+Werkzeug==0.12.2
+httplib2==0.10.3
+tweepy==3.5.0
+lxml==4.1.1
+oauth2==1.9.0.post1
